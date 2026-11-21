@@ -1,0 +1,453 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800-italic.css";
+@import "@fontsource/poppins/900-italic.css";
+
+/* Laptop browsers with little height to spare (browser chrome, scaled
+   displays). The home hero tightens on these instead of scrolling. */
+@custom-variant laptop-short (@media (min-width: 64rem) and (max-height: 46rem));
+@custom-variant laptop-shorter (@media (min-width: 64rem) and (max-height: 42.5rem));
+
+/*
+ * Dulux Employee Gathering 2027 — Greater Together.
+ *
+ * Every colour here is sampled from the Greater Together key visual rather
+ * than picked from a brand swatch: the deep navy field, the royal and
+ * electric blues of the layered tiles, the cyan-to-ice gradient that runs
+ * through "TOGETHER", and the sky blue of the lightest shapes.
+ *
+ * Type follows the Glow Act deck: a condensed display face for headlines,
+ * Poppins for reading, and Poppins Black Italic for the KV wordmark.
+ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--secondary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--primary);
+
+  --color-navy-950: var(--navy-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-royal: var(--royal);
+  --color-electric: var(--electric);
+  --color-cyan: var(--cyan);
+  --color-ice: var(--ice);
+  --color-sky: var(--sky);
+
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
+  --color-paper-muted: var(--paper-muted);
+  --color-paper-border: var(--paper-border);
+
+  --font-display: var(--font-display-family);
+  --font-sans: var(--font-body-family);
+}
+
+:root {
+  --font-display-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-body-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* KV palette */
+  --navy-950: #000d4a;
+  --navy-900: #01145f;
+  --navy-800: #022379;
+  --navy-700: #06309e;
+  --royal: #0a37db;
+  --electric: #1f7bff;
+  --cyan: #3ccaff;
+  --ice: #b5fcfd;
+  --sky: #9cd6fd;
+
+  /* Semantic */
+  --background: var(--navy-900);
+  --foreground: #ffffff;
+  --card: color-mix(in oklab, var(--navy-800) 72%, var(--navy-900));
+  --secondary: color-mix(in oklab, #ffffff 7%, var(--navy-900));
+  --muted-foreground: #b3c7ee;
+  --border: color-mix(in oklab, var(--sky) 18%, transparent);
+  --primary: var(--cyan);
+  --primary-foreground: var(--navy-950);
+
+  /* The pass and other "physical" pieces sit on white, like the printed badge. */
+  --paper: #ffffff;
+  --paper-foreground: var(--navy-900);
+  --paper-muted: #4b5f93;
+  --paper-border: #dce6f8;
+
+  --radius-card: 1.5rem;
+  --radius-tile: 0.875rem;
+
+  /* Sampled from "TOGETHER" in the KV: mint-white on the left, through aqua
+     and sky, to a bright azure that stays well clear of the royal field. */
+  --gradient-together: linear-gradient(
+    100deg,
+    #c6fdfe 0%,
+    #8ff8fd 22%,
+    #5fd9fe 48%,
+    #2fa6fd 74%,
+    #0a8cff 100%
+  );
+  /* The KV letters catch light along their top edge. */
+  --gradient-together-sheen: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.28) 0%,
+    rgb(255 255 255 / 0) 55%
+  );
+  --gradient-royal: linear-gradient(160deg, var(--royal) 0%, var(--navy-800) 100%);
+  --gradient-electric: linear-gradient(135deg, #2a9bff 0%, var(--royal) 100%);
+  --glow-field: radial-gradient(
+    110% 70% at 50% 0%,
+    color-mix(in oklab, var(--royal) 55%, transparent) 0%,
+    transparent 65%
+  );
+  --shadow-lift: 0 24px 60px -30px rgb(0 8 50 / 0.85);
+  --shadow-paper: 0 30px 70px -34px rgb(0 6 40 / 0.9);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+    background: var(--navy-950);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body-family);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--cyan) 40%, transparent);
+    color: #fff;
+  }
+}
+
+/* ── Type scale ─────────────────────────────────────────────────── */
+@utility t-micro {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+@utility t-small {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+@utility t-body {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+@utility t-lead {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+/* Headlines speak in the KV wordmark's voice: heavy, italic, extended. */
+@utility t-display {
+  font-family: var(--font-display-family);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: clamp(2.25rem, 8.4vw, 4.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  word-spacing: 0.14em;
+}
+@utility t-h2 {
+  font-family: var(--font-display-family);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 4.8vw, 2.625rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  word-spacing: 0.14em;
+}
+@utility t-h3 {
+  font-family: var(--font-body-family);
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility t-h4 {
+  font-family: var(--font-display-family);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: 1.375rem;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  word-spacing: 0.12em;
+}
+/* The KV wordmark: heavy, italic, extended. */
+@utility wordmark {
+  font-family: var(--font-body-family);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  /* The tight tracking would otherwise close up the gaps between words. */
+  word-spacing: 0.14em;
+}
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--sky);
+}
+@utility measure {
+  max-width: 60ch;
+}
+@utility text-together {
+  background-image: var(--gradient-together-sheen), var(--gradient-together);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Surfaces ───────────────────────────────────────────────────── */
+/* One panel recipe on navy: a quiet lift off the field and a hairline. */
+@utility surface {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025)), var(--navy-900);
+  border: 1px solid rgb(181 252 253 / 0.13);
+  border-radius: var(--radius-card);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 24px 50px -32px rgb(0 8 60 / 0.9);
+}
+@utility surface-interactive {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025)), var(--navy-900);
+  border: 1px solid rgb(181 252 253 / 0.13);
+  border-radius: var(--radius-card);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 24px 50px -32px rgb(0 8 60 / 0.9);
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  &:hover {
+    border-color: color-mix(in oklab, var(--cyan) 45%, transparent);
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.04)), var(--navy-900);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+}
+/* White, like a printed piece of the event — the pass, the conversation card. */
+@utility paper {
+  background: var(--paper);
+  color: var(--paper-foreground);
+  border-radius: 1.6rem;
+  box-shadow: var(--shadow-paper);
+}
+@utility rise {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+}
+
+/* ── Buttons ────────────────────────────────────────────────────── */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding-inline: 1.5rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease;
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+/* Primary: white on navy — the most confident mark on the page. */
+@utility btn-primary {
+  background: #ffffff;
+  color: var(--navy-900);
+  &:hover:not(:disabled) {
+    background: var(--ice);
+  }
+}
+@utility btn-ghost {
+  border: 1px solid color-mix(in oklab, var(--sky) 40%, transparent);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    border-color: var(--cyan);
+    background: color-mix(in oklab, var(--cyan) 10%, transparent);
+  }
+}
+/* For actions on white paper. */
+@utility btn-navy {
+  background: var(--navy-900);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    background: var(--royal);
+  }
+}
+
+/* Prototype-only controls: visibly not part of the real product. */
+@utility proto {
+  border: 1.5px dashed color-mix(in oklab, var(--ice) 45%, transparent);
+  border-radius: var(--radius-card);
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklab, var(--ice) 4%, transparent) 0 10px,
+    transparent 10px 20px
+  );
+}
+
+/* ── Motion ─────────────────────────────────────────────────────── */
+@keyframes ribbon-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-2.5%, 1.5%, 0);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--cyan) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.ribbon-drift {
+  animation: ribbon-drift 16s ease-in-out infinite;
+}
+.pulse-ring {
+  animation: pulse-ring 2.6s ease-out infinite;
+}
+
+/* ── Accessibility ──────────────────────────────────────────────── */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy-900);
+  padding: 0.6rem 1.1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: transform 0.25s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: 0.6rem;
+  }
+}
+
+@utility tap-target {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .ribbon-drift {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Safari zooms into fields under 16px on focus. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Numerals and labels set in the display face follow the wordmark too. */
+.font-display {
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}

@@ -92,12 +92,17 @@ export function PageHero({
             {inline ? (
               <span className="block text-[clamp(1.75rem,8vw,4.25rem)]">
                 {title}
-                {accent && <> {accent}</>}
+                {accent && (
+                  <>
+                    {" "}
+                    <span className="text-together">{accent}</span>
+                  </>
+                )}
               </span>
             ) : (
               <>
                 <span className="block">{title}</span>
-                {accent && <span className="block">{accent}</span>}
+                {accent && <span className="text-together block">{accent}</span>}
               </>
             )}
           </motion.h1>
@@ -166,7 +171,7 @@ export function SectionTitle({
       <Tag
         className={`wordmark text-balance text-[clamp(1.875rem,5.6vw,3rem)] text-white ${eyebrow ? "mt-4" : ""}`}
       >
-        {title} {accent && <span>{accent}</span>}
+        {title} {accent && <span className="text-together">{accent}</span>}
       </Tag>
     </div>
   );

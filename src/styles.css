@@ -78,6 +78,8 @@
   --ice: #cfeefc;
   --sky: #9fd8f5;
   --silver: #dfe6ec;
+  /* The KV blue as a gradient: for actions and selected states on white. */
+  --gradient-kv-blue: linear-gradient(135deg, #2f9ad8 0%, #1d6aa8 52%, #0d4a80 100%);
 
   /* Semantic */
   --background: var(--navy-800);
@@ -226,9 +228,29 @@
 @utility measure {
   max-width: 60ch;
 }
-/* Was the gradient accent; headlines are now plain white throughout. */
+/* Emphasis in a headline on a white section: the KV's denim running into
+   the window's cyan, so a line stands out without leaving the palette. */
+@utility text-emphasis {
+  background-image: linear-gradient(100deg, #1b62a6 0%, #1677bb 50%, #1288c6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* The same idea on a dark section: silver-white running into sky. */
+@utility text-emphasis-light {
+  background-image: linear-gradient(100deg, #ffffff 0%, #cfeefc 45%, #6fd0f2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* The headline accent: one emphasised phrase per heading. On a blue
+   section it runs silver-white into sky; inside a white section (.tone-light)
+   it turns to the KV's denim-to-blue. */
 @utility text-together {
-  color: #ffffff;
+  background-image: linear-gradient(100deg, #ffffff 0%, #cfeefc 45%, #6fd0f2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ── Surfaces ───────────────────────────────────────────────────── */
@@ -628,4 +650,184 @@
   font-weight: 800;
   font-style: normal;
   letter-spacing: -0.01em;
+}
+
+/* ── White sections ─────────────────────────────────────────────── */
+/* A white band (.tone-light) re-inks the type written for the blue page:
+   white turns navy, muted white turns slate, sky and cyan turn denim, and
+   hairlines and glass tints turn navy-tinted. Dark islands inside it (cards,
+   panels, the paper pass) keep their own colours untouched. */
+.tone-light {
+  --island: 1;
+  color: #0a2c52;
+}
+.tone-light
+  :is(.text-white, .text-white\/90, .text-white\/85, .text-navy-900):not(
+    :is([data-tone="dark"], .paper),
+    :is([data-tone="dark"], .paper) *,
+    [role="tablist"] *
+  ) {
+  color: #0a2c52;
+}
+.tone-light
+  :is(.text-white\/80, .text-white\/75, .text-white\/70):not(
+    :is([data-tone="dark"], .paper),
+    :is([data-tone="dark"], .paper) *
+  ) {
+  color: #3d5a7a;
+}
+.tone-light
+  :is(
+    .text-white\/65,
+    .text-white\/60,
+    .text-white\/55,
+    .text-white\/50,
+    .text-white\/45,
+    .text-white\/40,
+    .text-muted-foreground
+  ):not(:is([data-tone="dark"], .paper), :is([data-tone="dark"], .paper) *) {
+  color: #5d7896;
+}
+.tone-light
+  :is(.text-sky, .text-cyan, .text-ice, .text-ice\/75, .eyebrow):not(
+    :is([data-tone="dark"], .paper),
+    :is([data-tone="dark"], .paper) *
+  ) {
+  color: #1d6aa8;
+}
+.tone-light .text-together:not(:is([data-tone="dark"], .paper), :is([data-tone="dark"], .paper) *) {
+  background-image: linear-gradient(100deg, #1b62a6 0%, #1677bb 50%, #1288c6 100%);
+}
+.tone-light
+  :is(
+    .border-white\/12,
+    .border-white\/15,
+    .border-white\/20,
+    .border-white\/\[0\.08\],
+    .border-white\/\[0\.09\],
+    .border-border
+  ):not(:is([data-tone="dark"], .paper), :is([data-tone="dark"], .paper) *) {
+  border-color: rgb(10 44 82 / 0.14);
+}
+.tone-light
+  :is(.divide-white\/\[0\.08\], .divide-border):not(
+    :is([data-tone="dark"], .paper),
+    :is([data-tone="dark"], .paper) *
+  )
+  > * {
+  border-color: rgb(10 44 82 / 0.12);
+}
+.tone-light
+  :is(
+    .bg-white\/\[0\.04\],
+    .bg-white\/\[0\.05\],
+    .bg-white\/\[0\.06\],
+    .bg-white\/\[0\.08\],
+    .bg-white\/\[0\.1\],
+    .bg-white\/10,
+    .bg-white\/8
+  ):not(:is([data-tone="dark"], .paper), :is([data-tone="dark"], .paper) *) {
+  /* Solid, so the outline pattern never shows through a panel. */
+  background-color: #edf4fb;
+}
+/* Tabs on white: the selected pill turns the KV's mid blue, white type. */
+.tone-light [role="tablist"] .bg-white {
+  background: var(--gradient-kv-blue);
+  box-shadow: 0 8px 20px -10px rgb(13 74 128 / 0.7);
+}
+.tone-light
+  [role="tablist"]
+  [aria-selected="true"]
+  :is(.text-navy-900, .text-navy-900\/70, .text-navy-900\/65) {
+  color: #ffffff;
+}
+.tone-light [role="tablist"] [aria-selected="true"]:is(.text-navy-900),
+.tone-light
+  [role="tablist"]
+  [aria-selected="true"]
+  :is(.text-navy-900, .text-navy-900\/70, .text-navy-900\/65) {
+  color: #ffffff;
+}
+.tone-light [role="tablist"] [aria-selected="true"] :is(.text-navy-900\/70, .text-navy-900\/65) {
+  opacity: 0.75;
+}
+.tone-light
+  [role="tablist"]
+  [aria-selected="false"]:is(.text-white, .text-white\/80, .text-white\/70),
+.tone-light
+  [role="tablist"]
+  [aria-selected="false"]
+  :is(.text-white, .text-white\/80, .text-white\/70) {
+  color: #0a2c52;
+}
+/* Buttons: silver-white on blue, KV blue gradient on white, so the main
+   action never disappears into its ground. */
+.tone-light .btn.btn-primary:not([data-tone="dark"] *) {
+  background: var(--gradient-kv-blue);
+  color: #ffffff;
+  box-shadow: 0 10px 24px -12px rgb(13 74 128 / 0.75);
+}
+.tone-light .btn.btn-primary:not([data-tone="dark"] *):hover:not(:disabled) {
+  background: linear-gradient(135deg, #3aa8e6 0%, #2277b8 52%, #0f5590 100%);
+}
+
+/* Cards on white: an ice-blue gradient with a blue hairline, cut with the
+   KV window's corners (small top-left and bottom-right, large on the other
+   two), so they read clearly against the white and still belong to the KV.
+   Their type is re-inked by the rules above. The KV's own panels (marked
+   data-tone="dark") stay dark on purpose. */
+.tone-light :is(.surface, .surface-interactive):not([data-tone="dark"], [data-tone="dark"] *) {
+  background: linear-gradient(160deg, #f7fbff 0%, #e4eff9 100%);
+  border-color: rgb(29 106 168 / 0.22);
+  border-radius: 0.75rem 1.75rem 0.75rem 1.75rem;
+  box-shadow: 0 16px 34px -24px rgb(13 74 128 / 0.55);
+}
+.tone-light .surface-interactive:not([data-tone="dark"] *):hover {
+  background: linear-gradient(160deg, #ffffff 0%, #dceaf7 100%);
+  border-color: rgb(29 106 168 / 0.5);
+}
+/* Inside a card, the panels and fields go white so they lift off the tint. */
+.tone-light
+  :is(.surface, .surface-interactive)
+  :is(
+    .bg-white\/\[0\.04\],
+    .bg-white\/\[0\.05\],
+    .bg-white\/\[0\.06\],
+    .bg-white\/10,
+    .bg-white\/6
+  ):not([data-tone="dark"] *) {
+  background-color: #ffffff;
+}
+/* Icon chips (a tinted square or circle holding a cyan icon) turn solid KV
+   blue with a white icon. */
+.tone-light
+  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12).text-cyan:not(
+    [data-tone="dark"] *
+  ),
+.tone-light
+  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12):has(
+    > svg.text-cyan
+  ):not([data-tone="dark"] *) {
+  background: var(--gradient-kv-blue);
+  color: #ffffff;
+}
+.tone-light
+  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12)
+  > svg.text-cyan:not([data-tone="dark"] *) {
+  color: #ffffff;
+}
+.tone-light .proto:not([data-tone="dark"] *) {
+  border-color: rgb(29 106 168 / 0.35);
+  background: rgb(29 106 168 / 0.04);
+}
+.tone-light :is(textarea, input:not([type="checkbox"], [type="radio"])):not([data-tone="dark"] *) {
+  background: #f6f9fc;
+  color: #0a2c52;
+  border-color: rgb(10 44 82 / 0.18);
+}
+.tone-light :is(textarea, input)::placeholder {
+  color: #8aa0b8;
+}
+.tone-light :is(.border-silver\/60, .border-silver\/50):not([data-tone="dark"] *) {
+  border-color: rgb(29 106 168 / 0.45);
 }

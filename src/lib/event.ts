@@ -198,16 +198,16 @@ export const DAY1: Day1Item[] = [
   {
     id: "pre-opening",
     title: "Pre-opening Readiness",
-    line: "Koordinasi transfer bandara, persiapan registrasi, dan bantuan untuk yang datang lebih awal",
-    summary:
-      "Tim acara mengatur transfer dari bandara, menyiapkan registrasi, dan membantu peserta yang tiba lebih awal.",
+    line: "Persiapan registrasi dan bantuan untuk yang datang lebih awal",
+    summary: "Tim acara menyiapkan registrasi dan membantu peserta yang tiba lebih awal.",
     hasActivity: false,
     daypart: "Before arrival",
-    where: "Bandara & hotel",
+    where: "Swissôtel",
   },
   {
     id: "welcome",
     title: "The Welcome Experience",
+    time: "13.00",
     line: "Check-in lewat microsite, sambutan personal, perkenalan tim, dan clue pack",
     summary:
       "Tunjukkan QR pass pribadimu di meja registrasi. Setelah dipindai, kamu akan menerima info kamar, identitas tim, dan welcome kit berisi clue pack tersegel untuk aktivitas hari berikutnya.",
@@ -221,30 +221,31 @@ export const DAY1: Day1Item[] = [
   {
     id: "missing-piece-totem",
     title: "The Missing Piece Totem",
-    line: "Totem berputar di dekat lobi: find your piece, find your people",
+    line: "Totem berputar di lobi: find your piece, find your people",
     summary:
       "Kamu mungkin datang bersama circle-mu sendiri, tapi cerita berikutnya dimulai dengan orang yang belum kamu kenal.",
-    checkIn: true,
     hasActivity: true,
     daypart: "Arrival",
-    where: "Dekat lobi Swissôtel",
+    where: "Lobi Swissôtel",
     offRundown: true,
   },
   {
     id: "journey-to-sunset",
     title: "Journey to Sunset",
-    line: "Waktu pribadi di awal siang, lalu berangkat ke venue malam",
+    time: "14.00",
+    line: "Waktu pribadi di awal siang, lalu berangkat ke Sunset Stage",
     summary:
-      "Waktunya beristirahat dan bersiap sebelum acara sore, tanpa aktivitas wajib. Setelah itu, perjalanan berlanjut ke venue malam.",
+      "Waktunya beristirahat dan bersiap sebelum acara sore, tanpa aktivitas wajib. Setelah itu, perjalanan berlanjut ke Sunset Stage.",
     personalTime: true,
     hasActivity: true,
     daypart: "Early afternoon",
-    where: "Kamar hotel",
-    note: "Waktu bebas untuk istirahat. Bus ke venue malam berangkat sesuai jadwal tim.",
+    where: "Kamar masing-masing",
+    note: "Waktu bebas untuk istirahat. Bus ke Sunset Stage berangkat sesuai jadwal tim.",
   },
   {
     id: "sunset-welcome",
     title: "Sunset Welcome",
+    time: "16.30",
     line: "Musik akustik, networking santai, dan suasana senja yang indah",
     summary:
       "Kamu akan disambut musik akustik, hidangan ringan saat senja, dan suasana yang membuat obrolan mengalir dengan sendirinya.",
@@ -256,6 +257,7 @@ export const DAY1: Day1Item[] = [
   {
     id: "open-table",
     title: "The Open Table",
+    time: "18.00",
     line: "Makan malam saat senja, ditemani obrolan bersama para pimpinan",
     summary:
       "Saat makan malam, para pimpinan duduk berbaur dengan rekan dari berbagai fungsi. Setiap meja punya satu conversation card untuk membuka obrolan.",
@@ -267,6 +269,7 @@ export const DAY1: Day1Item[] = [
   {
     id: "change-talk",
     title: "The Change Talk",
+    time: "19.30",
     line: "Sharing dari pimpinan, tanya jawab bersama moderator, dan rangkuman yang jelas",
     summary:
       "Pimpinan berbagi konteks dan arah perusahaan menuju 2027. Moderator lalu membawakan pertanyaan, termasuk pertanyaan anonim yang terkumpul lewat microsite ini.",
@@ -278,6 +281,7 @@ export const DAY1: Day1Item[] = [
   {
     id: "sunset-social",
     title: "Sunset Social",
+    time: "20.30",
     line: "Musik, DJ, obrolan santai, dan teaser Day 2",
     summary:
       "Malam berlanjut lebih santai dengan musik akustik live, DJ, dan networking informal. Sebelum acara selesai, pilih satu kata yang mewakili harapanmu untuk 2027.",
@@ -312,8 +316,9 @@ export type Session = {
   note?: string;
   /** Where it happens, only once the deck names it. */
   where?: string;
-  /** Clock time, once confirmed. */
+  /** Start and end, as clock times ("13.00"). */
   time?: string;
+  end?: string;
 };
 
 export type DayRundown = {
@@ -321,106 +326,174 @@ export type DayRundown = {
   title: string;
   intro: string;
   sessions: Session[];
-  footnote: string;
 };
 
-const TIMES_TBC = "Jam setiap sesi akan diinformasikan setelah dikonfirmasi tim acara.";
 const LANDS_END = "Land's End PIK 2";
+/** Location names, as the client asked for them. */
+const RESTO = "Restoran Swissôtel";
+const BALLROOM = "Ballroom Swissôtel";
+const SUNSET_STAGE = "Sunset Stage";
 
 export const RUNDOWN: Record<DayId, DayRundown> = {
   day1: {
-    date: "Wed, 16 Dec 2026",
+    date: "Rabu, 16 Desember 2026",
     title: "Find Your Place",
-    intro: "Check-in di hotel, waktu bebas di siang hari, lalu acara bersama di malam hari.",
-    sessions: DAY1.filter((d) => d.hasActivity && !d.offRundown).map((d) => ({
-      id: d.id,
-      title: d.title,
-      ...(d.note ? { note: d.note } : {}),
-      ...(d.where ? { where: d.where } : {}),
-      ...(d.time ? { time: d.time } : {}),
-    })),
-    footnote: TIMES_TBC,
+    intro:
+      "Mulai perjalananmu di Swissôtel, kenali timmu, lalu habiskan malam pertama dengan makan bersama dan ngobrol langsung dengan para pimpinan Dulux.",
+    sessions: [
+      {
+        id: "welcome",
+        title: "The Welcome Experience",
+        time: "13.00",
+        end: "15.00",
+        note: "Tunjukkan QR dari My Canvas Pass di meja registrasi, lobi Swissôtel. Ambil welcome kit dan cek informasi kamar serta pembagian timmu.",
+        where: "Lobi Swissôtel",
+      },
+      {
+        id: "journey-to-sunset",
+        title: "Journey to Sunset",
+        time: "15.00",
+        end: "17.00",
+        note: "Gunakan waktu bebas untuk beristirahat dan bersiap. Saat tiba giliran timmu, kumpul di lobi untuk naik bus menuju lokasi acara malam.",
+        where: "Kamar masing-masing",
+      },
+      {
+        id: "sunset-welcome",
+        title: "Sunset Welcome",
+        time: "17.00",
+        end: "18.00",
+        note: "Tunjukkan QR saat tiba di venue, lalu nikmati musik akustik dan camilan sambil berkenalan dengan rekan dari tim lain.",
+        where: SUNSET_STAGE,
+      },
+      {
+        id: "open-table",
+        title: "The Open Table",
+        time: "18.00",
+        end: "19.15",
+        note: "Nikmati makan malam bersama rekan dan pimpinan Dulux. Buka conversation card di mejamu dan gunakan pertanyaannya untuk memulai obrolan.",
+        where: SUNSET_STAGE,
+      },
+      {
+        id: "change-talk",
+        title: "The Change Talk",
+        time: "19.15",
+        end: "20.15",
+        note: "Dengarkan rencana Dulux untuk 2027 langsung dari para pimpinan. Pertanyaan yang sudah kamu dan rekan-rekan kirim lewat Question Box akan dibahas di sesi ini.",
+        where: SUNSET_STAGE,
+      },
+      {
+        id: "sunset-social",
+        title: "Sunset Social",
+        time: "20.15",
+        end: "21.30",
+        note: "Tutup malam pertama dengan live music dan DJ. Sebelum pulang, buka microsite dan pilih satu kata yang mewakili harapanmu untuk 2027.",
+        where: SUNSET_STAGE,
+      },
+    ],
   },
-  /** Deck p.101 — Day 2 flow; p.58–100 for the detail. */
   day2: {
-    date: "Thu, 17 Dec 2026",
+    date: "Kamis, 17 Desember 2026",
     title: "Build Something Greater",
     intro:
-      "Team building di Land's End PIK 2 dari pagi sampai sore, lalu Greater Together Kick-off Night di malam hari.",
+      "Hari ini kamu dan tim akan berburu petunjuk di Land's End PIK 2, menyatukan temuan, dan mempresentasikan solusi. Malamnya, kita berkumpul lagi untuk Greater Together Kick-off Night.",
     sessions: [
       {
         id: "morning-kickoff",
         title: "Morning Kick-off & Team Reveal",
-        note: "Notifikasi pagi dari microsite berisi jam sarapan dan highlight agenda. Sarapan bersama, lalu pengenalan The Bigger Picture Challenge.",
-        where: "Restoran hotel",
+        time: "07.00",
+        end: "09.00",
+        note: "Cek agenda pagi di microsite, lalu temui timmu saat sarapan di restoran hotel. Kenali misi The Bigger Picture Challenge sebelum berangkat ke Land's End PIK 2.",
+        where: RESTO,
       },
       {
         id: "team-building",
         title: "The Missing Pieces Team Building",
-        note: "Misi penemuan bersama tim: cari clue, hubungkan temuannya, dan susun gambaran besarnya.",
+        time: "09.00",
+        end: "12.00",
+        note: "Jelajahi Land's End PIK 2 bersama timmu. Kumpulkan petunjuk dan cari tahu bagaimana setiap temuan saling terhubung.",
         where: LANDS_END,
       },
-      { id: "lunch", title: "Lunch & Break", note: "Istirahat dan isi ulang energi." },
+      {
+        id: "lunch",
+        title: "Lunch & Break",
+        time: "12.00",
+        end: "13.00",
+        note: "Makan siang bersama tim dan ambil waktu untuk beristirahat sebelum tantangan berlanjut.",
+        where: LANDS_END,
+      },
       {
         id: "final-connection",
         title: "The Final Connection",
-        note: "Satukan semua temuan tim menjadi satu solusi bersama.",
+        time: "13.00",
+        end: "14.15",
+        note: "Kumpulkan semua petunjuk yang timmu temukan pagi tadi. Sepakati satu solusi dan siapkan cara kalian menyampaikannya ke dewan juri.",
         where: LANDS_END,
       },
       {
         id: "solution-showcase",
         title: "The Solution Showcase",
-        note: "Setiap tim mempresentasikan solusinya dalam 5 menit, lalu penjurian.",
+        time: "14.15",
+        end: "15.30",
+        note: "Setiap tim punya waktu lima menit untuk menunjukkan solusinya dan menjelaskan petunjuk yang membawa mereka ke sana. Setelah semua tim tampil, juri akan memberikan penilaian.",
         where: LANDS_END,
       },
       {
         id: "complete-your-piece",
         title: "Complete Your Piece",
-        note: "Serahkan Living Canvas Tile tim, lihat highlight, lalu penutupan team building.",
+        time: "15.30",
+        end: "16.00",
+        note: "Serahkan Living Canvas Tile timmu, lalu lihat kembali momen-momen pilihan dari tantangan hari ini sebelum sesi di Land's End PIK 2 ditutup.",
         where: LANDS_END,
       },
       {
         id: "free-time",
         title: "Free Time & Preparation",
-        note: "Istirahat dan bersiap sebelum Kick-off Night. Dress code: Greater Together Look.",
-        where: "Kamar hotel",
+        time: "16.00",
+        end: "18.30",
+        note: "Kembali ke hotel untuk beristirahat dan bersiap ke ballroom. Kenakan outfit dengan dress code Greater Together Look untuk acara malam ini.",
+        where: "Kamar masing-masing",
       },
       {
         id: "kickoff-night",
         title: "Greater Together Kick-off Night",
-        note: "Makan malam, visi pimpinan, The Final Stroke, penghargaan, dan perayaan bersama.",
-        where: "Ballroom",
+        time: "18.30",
+        end: "21.30",
+        note: "Nikmati makan malam bersama di ballroom dan dengarkan visi pimpinan Dulux untuk 2027. Malam ini juga ada The Final Stroke dan pemberian penghargaan, sebelum kita menutup hari dengan perayaan bersama.",
+        where: BALLROOM,
       },
     ],
-    footnote: TIMES_TBC,
   },
-  /** Deck p.104–105 — the final morning. */
   day3: {
-    date: "Fri, 18 Dec 2026",
+    date: "Jumat, 18 Desember 2026",
     title: "Make It Happen",
     intro:
-      "Sarapan bersama, rangkuman arah 2027, lalu functional huddle. Sesi pagi berlangsung pukul 07.00–10.00.",
+      "Di pagi terakhir, kita akan membahas apa arti prioritas Dulux 2027 bagi pekerjaan masing-masing. Kamu akan pulang dengan satu komitmen yang bisa mulai dijalankan bersama tim.",
     sessions: [
       {
         id: "breakfast-reconnect",
         title: "Breakfast & Reconnect",
-        note: "Sarapan santai sebelum sesi pagi terakhir.",
-        where: "Restoran hotel",
         time: "07.00",
+        end: "08.00",
+        note: "Temui kembali rekan-rekanmu di restoran hotel. Sambil sarapan, ceritakan satu hal dari kegiatan kemarin yang paling berkesan buatmu.",
+        where: RESTO,
       },
       {
         id: "direction-recap",
         title: "Direction Recap",
-        note: "Pimpinan merangkum kembali prioritas utama Dulux untuk 2027.",
+        time: "08.00",
+        end: "08.45",
+        note: "Simak rangkuman pimpinan tentang prioritas Dulux untuk 2027. Catat poin yang paling relevan untuk dibahas bersama tim fungsimu di sesi berikutnya.",
+        where: RESTO,
       },
       {
         id: "functional-huddle",
         title: "Functional Huddle",
-        note: "Berkumpul per fungsi untuk menerjemahkan prioritas jadi langkah nyata, lalu mengisi Commitment Card.",
+        time: "08.45",
+        end: "10.00",
+        note: "Berkumpul dengan rekan satu fungsi untuk menyepakati langkah pertama yang bisa kalian jalankan. Sebelum sesi berakhir, isi Commitment Card dengan tindakan yang akan kamu ambil.",
+        where: RESTO,
       },
     ],
-    footnote:
-      "Sesi pagi berlangsung pukul 07.00–10.00. Jam per sesi akan diinformasikan tim acara.",
   },
 };
 
@@ -429,7 +502,9 @@ export const RUNDOWN: Record<DayId, DayRundown> = {
 export type CheckInMode = "crew" | "self";
 
 /**
- * Every on-site check-in, all three days, in rundown order. `crew` is stamped
+ * Every on-site check-in, all three days, in rundown order (per Glowact's
+ * notes: arrival, sunset, the two Sunset Social games, team building, Kick-off
+ * Night and Day 3's sessions; the other moments need no check-in). `crew` is stamped
  * by the crew's scanner (show the pass QR); `self` is a check-in the
  * participant makes on the microsite once they're there.
  */
@@ -443,52 +518,36 @@ export const CHECK_INS = [
     how: "Setelah QR dipindai, kamu menerima info kamar, identitas tim, dan welcome kit berisi clue pack tersegel untuk hari berikutnya. Pass-mu lalu menampilkan “Your Piece Has Arrived”.",
   },
   {
-    id: "missing-piece-totem",
-    day: "day1",
-    name: "The Missing Piece Totem",
-    mode: "self",
-    where: "Dekat lobi Swissôtel",
-    how: "Datangi totem berputar di dekat lobi. Di clue pack-mu ada satu keping puzzle: temukan rekan yang memegang keping lainnya, lalu check-in di sini.",
-  },
-  {
     id: "sunset-welcome",
     day: "day1",
     name: "Sunset Welcome",
     mode: "crew",
-    where: "Venue malam",
+    where: SUNSET_STAGE,
     how: "Scan QR My Canvas Pass saat tiba. Kamu disambut musik akustik dan hidangan ringan saat senja, lalu ikuti clue-mu ke titik temu tim.",
-  },
-  {
-    id: "open-table",
-    day: "day1",
-    name: "The Open Table",
-    mode: "self",
-    where: "Venue malam, meja makan",
-    how: "Check-in begitu duduk di mejamu. Setiap meja punya satu conversation card untuk membuka obrolan dengan pimpinan dan rekan dari fungsi lain.",
-  },
-  {
-    id: "change-talk",
-    day: "day1",
-    name: "The Change Talk",
-    mode: "self",
-    where: "Venue malam",
-    how: "Check-in saat sesi dimulai. Pimpinan menjelaskan arah Dulux menuju 2027, lalu moderator membawakan pertanyaan dari Question Box.",
   },
   {
     id: "sunset-social",
     day: "day1",
     name: "Sunset Social",
     mode: "self",
-    where: "Venue malam",
+    where: SUNSET_STAGE,
     how: "Check-in saat malam berlanjut dengan musik live, DJ, dan games. Jangan lupa pilih satu kata harapanmu untuk 2027.",
   },
   {
-    id: "morning-kickoff",
-    day: "day2",
-    name: "Morning Kick-off & Team Reveal",
+    id: "build-it-together",
+    day: "day1",
+    name: "Build It Together",
     mode: "crew",
-    where: "Restoran hotel",
-    how: "Tunjukkan QR My Canvas Pass saat sarapan. Setelah itu, The Bigger Picture Challenge diperkenalkan.",
+    where: SUNSET_STAGE,
+    how: "Mainkan game menara balok kayu bersama rekan-rekanmu, lalu tunjukkan QR My Canvas Pass ke crew di area game. Selesaikan dua games Sunset Social untuk membuka reward.",
+  },
+  {
+    id: "together-on-target",
+    day: "day1",
+    name: "Together On Target",
+    mode: "crew",
+    where: SUNSET_STAGE,
+    how: "Mainkan game ketepatan bersama timmu, lalu tunjukkan QR My Canvas Pass ke crew di area game. Selesaikan dua games Sunset Social untuk membuka reward.",
   },
   {
     id: "team-building",
@@ -499,35 +558,11 @@ export const CHECK_INS = [
     how: "Scan QR My Canvas Pass saat tiba di venue team building, lalu bergabung dengan timmu.",
   },
   {
-    id: "final-connection",
-    day: "day2",
-    name: "The Final Connection",
-    mode: "self",
-    where: LANDS_END,
-    how: "Check-in saat timmu mulai menyatukan semua temuan menjadi satu solusi.",
-  },
-  {
-    id: "solution-showcase",
-    day: "day2",
-    name: "The Solution Showcase",
-    mode: "self",
-    where: LANDS_END,
-    how: "Check-in saat sesi presentasi dimulai. Setiap tim punya 5 menit untuk pitch solusinya.",
-  },
-  {
-    id: "complete-your-piece",
-    day: "day2",
-    name: "Complete Your Piece",
-    mode: "self",
-    where: LANDS_END,
-    how: "Check-in saat timmu menyerahkan Living Canvas Tile untuk kanvas bersama.",
-  },
-  {
     id: "kickoff-night",
     day: "day2",
     name: "Greater Together Kick-off Night",
     mode: "crew",
-    where: "Ballroom",
+    where: BALLROOM,
     how: "Scan QR My Canvas Pass di pintu masuk ballroom. Kehadiranmu langsung terkonfirmasi untuk Kick-off Night.",
   },
   {
@@ -535,7 +570,7 @@ export const CHECK_INS = [
     day: "day3",
     name: "Breakfast & Reconnect",
     mode: "crew",
-    where: "Restoran hotel",
+    where: RESTO,
     how: "Tunjukkan QR My Canvas Pass saat sarapan, sebelum sesi pagi terakhir.",
   },
   {
@@ -543,7 +578,7 @@ export const CHECK_INS = [
     day: "day3",
     name: "Direction Recap",
     mode: "self",
-    where: "Lokasi menyusul",
+    where: RESTO,
     how: "Check-in saat sesi dimulai. Pimpinan merangkum kembali prioritas utama Dulux untuk 2027.",
   },
   {
@@ -551,8 +586,8 @@ export const CHECK_INS = [
     day: "day3",
     name: "Functional Huddle",
     mode: "self",
-    where: "Bersama fungsimu",
-    how: "Check-in bersama fungsimu. Isi Commitment Card, lalu tempelkan di Our Next Moves Wall.",
+    where: RESTO,
+    how: "Check-in saat huddle fungsimu dimulai. Isi Commitment Card, lalu tempelkan di Our Next Moves Wall.",
   },
 ] as const satisfies readonly {
   id: string;
@@ -595,10 +630,6 @@ export const WELCOME_KIT = [
   { id: "tee", name: "Oversized T-Shirt", note: "Dengan logo acara." },
   { id: "fan", name: "Mini Hand Fan", note: "Dengan logo acara." },
 ] as const;
-
-/** Deck p.39 / planner brief p.6 */
-export const CONVERSATION_CARD =
-  "What is one thing about working together that we should carry into 2027?";
 
 /** Deck p.41 — how The Change Talk runs. */
 export const CHANGE_TALK_PARTS = [
@@ -698,7 +729,7 @@ export const PASSPORT_FAQ: Faq[] = [
   },
   {
     q: "Aktivitas mana saja yang perlu check-in?",
-    a: "Semua aktivitas di Activity Quota. Ada dua cara: crew scan (tunjukkan QR di pass ini ke crew, misalnya saat registrasi, Sunset Welcome, team building, dan Kick-off Night) dan self check-in (tekan Check in now di microsite saat kamu sudah di lokasi). Semua check-in terbuka setelah check-in kedatangan di Day 1.",
+    a: "Semua aktivitas di Activity Quota. Ada dua cara: crew scan (tunjukkan QR di pass ini ke crew), misalnya saat registrasi, Sunset Welcome, dua games Sunset Social, team building, Kick-off Night, dan sarapan Day 3; serta self check-in (tekan Check in now di microsite saat kamu sudah di lokasi). Selesaikan dua games Sunset Social untuk menukar reward di Redemption Area.",
   },
 ];
 
@@ -756,24 +787,39 @@ export const SUNSET_PHOTOBOOTH = {
   text: "Photobooth open-frame dengan pantai dan senja sebagai latar alami. Bentuk geometrisnya terinspirasi The Living Canvas: orang-orang yang berbeda, menyatu jadi satu.",
 };
 
-/** Deck p.47 — Sunset Social games. */
+/** Deck p.47 — Sunset Social games. Each is scanned once played; both
+ *  together unlock a reward at the redemption area (Glowact). */
 export const SUNSET_GAMES = {
   games: [
     {
       name: "Build It Together",
       text: "Bergantian ambil dan susun balok kayu tanpa menjatuhkan menaranya. Setiap balok mewakili satu kekuatan atau kontribusi.",
     },
-    { name: "Together On Target", text: "Game ketepatan yang dimainkan bersama tim." },
+    {
+      name: "Together On Target",
+      text: "Game ketepatan yang dimainkan bersama tim: bidik target dan kumpulkan poin bersama.",
+    },
   ],
   rewards: ["Connection Pin", "Puzzle Keychain", "Canvas Magnet"],
+  /** The check-ins that unlock the reward. */
+  ids: ["build-it-together", "together-on-target"] as const,
+  where: "Redemption Area, Sunset Stage",
 };
 
 /* ── Day 2 (deck p.58–100) ────────────────────────────────────────── */
 
-/** Deck p.58 — the morning notification. */
+/**
+ * Day 2's morning notification: pops up the first time the microsite is
+ * opened on Day 2 (deck p.58; client feedback: a notification, not a card).
+ */
 export const MORNING_NOTIFICATION = {
+  /** The day it appears, Jakarta time. */
+  date: "2026-12-17",
   title: "Start Together. Move Further.",
-  items: ["Jam sarapan", "Jam ballroom dibuka", "Highlight agenda hari ini", "Satu prompt pagi"],
+  body: "Selamat pagi! Hari ini kita berburu petunjuk di Land's End PIK 2, lalu berkumpul lagi untuk Kick-off Night.",
+  breakfast: { time: "07.00–09.00", where: "Restoran Swissôtel" },
+  ballroom: { time: "18.30", where: "Ballroom Swissôtel" },
+  prompt: "Satu hal yang ingin kamu temukan bersama timmu hari ini?",
 };
 
 /** Deck p.60–72 — The Missing Pieces team building. */
@@ -786,7 +832,7 @@ export const TEAM_BUILDING = {
     {
       id: "find-the-clues",
       title: "Find The Clues",
-      text: "Lima clue dan satu Change Alert tersebar di area team building.",
+      text: "Lima mini challenge, masing-masing membuka satu clue.",
     },
     {
       id: "final-connection",
@@ -804,24 +850,41 @@ export const TEAM_BUILDING = {
       text: "Serahkan Living Canvas Tile tim untuk kanvas bersama.",
     },
   ],
-  /** Deck p.61 — five clues and one change alert. */
-  clues: [
-    { key: "Who", q: "Who are we solving for?" },
-    { key: "Need", q: "What do they really need?" },
-    { key: "Context", q: "What is happening around them?" },
-    { key: "Challenge", q: "What is getting in the way?" },
-    { key: "Opportunity", q: "Where is the opportunity?" },
-    { key: "Change Alert", q: "What has suddenly changed?" },
+  /** Games mechanism: five mini challenges, one clue each (client deck). */
+  games: [
+    {
+      id: "match-up",
+      clue: "Know Your Client",
+      name: "Match Up Games",
+      text: "Cocokkan kartu gambar yang tersebar untuk melengkapi tiga profil pelanggan.",
+    },
+    {
+      id: "one-stroke",
+      clue: "Look Beyond The Obvious",
+      name: "One Stroke",
+      text: "Gambar satu bentuk bersama-sama dengan spidol yang dikendalikan lewat tali.",
+    },
+    {
+      id: "signal-maze",
+      clue: "Connect The Signals",
+      name: "Signal Maze",
+      text: "Arahkan bola melewati labirin dengan menyelaraskan gerakan seluruh tim.",
+    },
+    {
+      id: "stack-without-hands",
+      clue: "Understand The Limits",
+      name: "Stack Without Hands",
+      text: "Susun gelas memakai tali dan karet gelang, tanpa menyentuhnya langsung.",
+    },
+    {
+      id: "bridge-the-gap",
+      clue: "Spot The Hidden Potential",
+      name: "Bridge The Gap",
+      text: "Pindahkan bola lewat lintasan yang disambung bersama, tanpa menjatuhkannya.",
+    },
   ],
-  /** Deck p.65 — the discovery zone. */
-  howToDiscover: [
-    { name: "Clue Wall", text: "Potongan informasi visual." },
-    { name: "Audio Clue", text: "Cuplikan voice note atau percakapan." },
-    { name: "Locked Case", text: "Puzzle atau kode yang harus dipecahkan." },
-    { name: "Object Clue", text: "Benda yang membawa konteks tertentu." },
-    { name: "QR Clue", text: "Informasi digital lewat microsite ini." },
-    { name: "Data Clue", text: "Angka atau data yang perlu diinterpretasikan." },
-  ],
+  scoring:
+    "Setiap mini challenge dinilai dari kecepatan dan ketepatan menyelesaikan misi. Semua hasil dicatat dan digabung ke dalam satu leaderboard. Tim dengan kombinasi kecepatan dan ketepatan terbaik jadi pemenangnya!",
   /** Deck p.66 — the final mission. */
   finalQuestions: [
     { q: "What did we discover?", text: "Apa yang sebenarnya terjadi?" },

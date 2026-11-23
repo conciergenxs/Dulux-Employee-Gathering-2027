@@ -327,15 +327,148 @@ export function KvPiece({
 }
 
 /** The KV lockup's voice for small labels: condensed capitals, no rules. */
-export function KvEyebrow({ children, className = "" }: { children: string; className?: string }) {
+export function KvEyebrow({
+  children,
+  className = "",
+  tone = "light",
+}: {
+  children: string;
+  className?: string;
+  /** `dark` for a white section: the KV's denim instead of white. */
+  tone?: "light" | "dark";
+}) {
   return (
     <p
-      className={`w-full text-center font-[family-name:var(--font-kv-condensed)] text-[0.9375rem] uppercase tracking-[0.22em] text-white/85 sm:text-[1.0625rem] ${className}`}
+      className={`w-full text-center font-[family-name:var(--font-kv-condensed)] text-[0.9375rem] uppercase tracking-[0.22em] sm:text-[1.0625rem] ${
+        tone === "dark" ? "text-[#1d6aa8]" : "text-white/85"
+      } ${className}`}
     >
       {/* The leading pad balances the tracking after the last letter, so the
           label sits optically centred. */}
       <span className="pl-[0.22em]">{children}</span>
     </p>
+  );
+}
+
+/* ── Line pattern (for white sections) ──────────────────────────── */
+
+type LineTile = {
+  x: number;
+  y: number;
+  kind: "square" | "inset" | "rings" | "arch" | "bars";
+  corner?: "tl" | "tr" | "bl" | "br";
+};
+
+/** One corner of the KV wall, drawn as outlines only. Mirrored for the right. */
+const LINE_CLUSTER: LineTile[] = [
+  { x: 0, y: 0, kind: "inset" },
+  { x: 1, y: 0, kind: "rings", corner: "bl" },
+  { x: 2, y: 0, kind: "square" },
+  { x: 3, y: 0, kind: "bars" },
+  { x: 0, y: 1, kind: "arch" },
+  { x: 1, y: 1, kind: "square" },
+  { x: 2, y: 1, kind: "rings", corner: "tl" },
+  { x: 0, y: 2, kind: "rings", corner: "tr" },
+  { x: 1, y: 2, kind: "inset" },
+];
+
+function lineTile(t: LineTile) {
+  const ox = t.x * 100;
+  const oy = t.y * 100;
+  const parts: string[] = [`M${ox} ${oy}h100v100h-100Z`];
+  if (t.kind === "inset") {
+    parts.push(`M${ox + 14} ${oy + 18}h72v64h-72Z`, `M${ox + 26} ${oy + 32}h48v36h-48Z`);
+  } else if (t.kind === "bars") {
+    parts.push(`M${ox + 34} ${oy}v100`, `M${ox + 66} ${oy}v100`);
+  } else if (t.kind === "arch") {
+    parts.push(`M${ox + 12} ${oy + 100}V${oy + 50}A38 38 0 0 1 ${ox + 88} ${oy + 50}V${oy + 100}`);
+  } else if (t.kind === "rings") {
+    const c = t.corner ?? "bl";
+    const cx = ox + (c === "tr" || c === "br" ? 100 : 0);
+    const cy = oy + (c === "bl" || c === "br" ? 100 : 0);
+    const sx = c === "tr" || c === "br" ? -1 : 1;
+    const sy = c === "bl" || c === "br" ? -1 : 1;
+    for (const r of [96, 74, 52, 30]) {
+      parts.push(`M${cx} ${cy + sy * r}A${r} ${r} 0 0 ${sx * sy > 0 ? 0 : 1} ${cx + sx * r} ${cy}`);
+    }
+  }
+  return parts.join("");
+}
+
+const LINE_PATH = LINE_CLUSTER.map(lineTile).join("");
+
+/** Phone: fewer, larger-spaced clusters, half off the edge. */
+const PHONE_SPOTS: { pos: string; flip: string; origin: string }[] = [
+  { pos: "-right-[22vw] top-0", flip: "-scale-x-100", origin: "0% 0%" },
+  { pos: "-left-[22vw] bottom-0", flip: "-scale-y-100", origin: "0% 0%" },
+];
+
+/** Where the outline clusters sit: down both edges, alternating sides. */
+const LINE_SPOTS: { pos: string; flip: string; origin: string }[] = [
+  { pos: "left-0 top-0", flip: "", origin: "0% 0%" },
+  { pos: "right-0 top-0", flip: "-scale-x-100", origin: "0% 0%" },
+  { pos: "left-0 top-[38%] -translate-y-1/2", flip: "", origin: "0% 50%" },
+  { pos: "right-0 top-[64%] -translate-y-1/2", flip: "-scale-x-100", origin: "0% 50%" },
+  { pos: "left-0 bottom-0", flip: "-scale-y-100", origin: "0% 0%" },
+];
+
+/**
+ * The KV's tile wall as outlines only, for a white section: clusters down
+ * both edges, so the pattern stays with you as the section scrolls, each
+ * fading from the screen edge inward and none reaching the middle, where the
+ * content is. Lighter and smaller on a phone.
+ */
+export function KvLinePattern({ className = "" }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
+    >
+      {/* Laptop and tablet: the tile outlines down both edges. */}
+      {LINE_SPOTS.map((spot) => (
+        <svg
+          key={spot.pos}
+          viewBox="-1 -1 402 302"
+          fill="none"
+          className={`absolute hidden h-auto w-[min(40vw,30rem)] text-[#1d6aa8] sm:block ${spot.pos} ${spot.flip}`}
+          style={{
+            maskImage: `radial-gradient(95% 100% at ${spot.origin}, #000 35%, transparent 100%)`,
+            WebkitMaskImage: `radial-gradient(95% 100% at ${spot.origin}, #000 35%, transparent 100%)`,
+          }}
+        >
+          <path
+            d={LINE_PATH}
+            stroke="currentColor"
+            strokeWidth={1.5}
+            strokeOpacity={0.4}
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      ))}
+      {/* Phone: the same clusters at the laptop's tile size, so they read
+          the same way, but only two of them — top right and bottom left —
+          each mostly off the screen and fading softly toward the middle. */}
+      {PHONE_SPOTS.map((spot) => (
+        <svg
+          key={spot.pos}
+          viewBox="-1 -1 402 302"
+          fill="none"
+          className={`absolute h-auto w-[92vw] text-[#1d6aa8] sm:hidden ${spot.pos} ${spot.flip}`}
+          style={{
+            maskImage: `radial-gradient(100% 100% at ${spot.origin}, #000 40%, transparent 100%)`,
+            WebkitMaskImage: `radial-gradient(100% 100% at ${spot.origin}, #000 40%, transparent 100%)`,
+          }}
+        >
+          <path
+            d={LINE_PATH}
+            stroke="currentColor"
+            strokeWidth={1.25}
+            strokeOpacity={0.5}
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      ))}
+    </div>
   );
 }
 
@@ -503,11 +636,11 @@ export function PalmGrove() {
     >
       <Grove
         variant={0}
-        className="left-[-24%] top-[24%] w-[70%] sm:left-[-8%] sm:top-[14%] sm:w-[44%] lg:bottom-0 lg:left-[-3%] lg:top-auto lg:h-full lg:w-auto"
+        className="left-[-24%] top-[12%] w-[70%] sm:left-[-8%] sm:top-[0%] sm:w-[44%] lg:bottom-0 lg:left-[-3%] lg:top-auto lg:h-full lg:w-auto"
       />
       <Grove
         variant={1}
-        className="right-[-24%] top-[17%] w-[72%] -scale-x-100 sm:right-[-8%] sm:top-[8%] sm:w-[44%] lg:bottom-0 lg:right-[-3%] lg:top-auto lg:h-full lg:w-auto"
+        className="right-[-24%] top-[5%] w-[72%] -scale-x-100 sm:right-[-8%] sm:top-[-6%] sm:w-[44%] lg:bottom-0 lg:right-[-3%] lg:top-auto lg:h-full lg:w-auto"
       />
     </div>
   );

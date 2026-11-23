@@ -1,4 +1,4 @@
-import { CHECK_INS, DAYS, type CheckIn, type DayId } from "@/lib/event";
+import { CHECK_INS, DAYS, SUNSET_GAMES, type CheckIn, type DayId } from "@/lib/event";
 import type { ParticipantState } from "@/lib/participant";
 import lobby from "@/assets/venue/lobby.webp";
 import ballroom from "@/assets/venue/ballroom.webp";
@@ -15,6 +15,8 @@ import completeYourPiece from "@/assets/activities/complete-your-piece.webp";
 import breakfastReconnect from "@/assets/activities/breakfast-reconnect.webp";
 import directionRecap from "@/assets/activities/direction-recap.webp";
 import functionalHuddle from "@/assets/activities/functional-huddle.webp";
+import buildItTogether from "@/assets/activities/build-it-together.webp";
+import togetherOnTarget from "@/assets/activities/together-on-target.webp";
 
 /**
  * The on-site activities that stamp the pass, all three days (Dulux sitemap:
@@ -29,7 +31,8 @@ export type QuotaActivity = CheckIn & {
   quota: number;
 };
 
-export const ACTIVITY_PHOTO: Record<CheckIn["id"], string> = {
+/** One photo per moment, check-in or not, never the same one twice. */
+export const ACTIVITY_PHOTO = {
   welcome: lobby,
   "missing-piece-totem": totem,
   "sunset-welcome": sunsetWelcome,
@@ -41,24 +44,13 @@ export const ACTIVITY_PHOTO: Record<CheckIn["id"], string> = {
   "final-connection": finalConnection,
   "solution-showcase": solutionShowcase,
   "complete-your-piece": completeYourPiece,
+  "build-it-together": buildItTogether,
+  "together-on-target": togetherOnTarget,
   "kickoff-night": ballroom,
   "breakfast-reconnect": breakfastReconnect,
   "direction-recap": directionRecap,
   "functional-huddle": functionalHuddle,
-};
-
-/** Generated mood references, labelled as such wherever they are shown large. */
-export const MOOD_PHOTOS = new Set<CheckIn["id"]>([
-  "missing-piece-totem",
-  "morning-kickoff",
-  "team-building",
-  "final-connection",
-  "solution-showcase",
-  "complete-your-piece",
-  "breakfast-reconnect",
-  "direction-recap",
-  "functional-huddle",
-]);
+} satisfies Record<CheckIn["id"], string> & Record<string, string>;
 
 export const QUOTA_ACTIVITIES: QuotaActivity[] = CHECK_INS.map((c) => {
   const day = DAYS.find((d) => d.id === c.day)!;
@@ -71,4 +63,10 @@ export function activitiesOn(day: DayId) {
 
 export function stampsOf(state: ParticipantState) {
   return QUOTA_ACTIVITIES.filter((a) => state.checkIns[a.id]).length;
+}
+
+/** The Sunset Social games: how many are done, and whether the reward is open. */
+export function gamesOf(state: ParticipantState) {
+  const done = SUNSET_GAMES.ids.filter((id) => state.checkIns[id]).length;
+  return { done, total: SUNSET_GAMES.ids.length, unlocked: done === SUNSET_GAMES.ids.length };
 }

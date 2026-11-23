@@ -40,7 +40,7 @@ export function Checklist({ state }: { state: ParticipantState }) {
   ];
 
   return (
-    <section id="checklist" className="scroll-mt-28 px-5 pt-14 sm:pt-16 lg:px-0 lg:pt-0">
+    <section id="checklist" className="scroll-mt-28 px-5 pt-14 sm:pt-16 lg:px-0">
       <div className="mx-auto max-w-md lg:max-w-none">
         <Reveal>
           <PanelHead eyebrow="Participation" title="Your" accent="Checklist" />
@@ -57,7 +57,7 @@ export function Checklist({ state }: { state: ParticipantState }) {
             <Reveal as="li" key={item.id} delay={0.06 + i * 0.05}>
               <Link
                 to="/activities"
-                search={{ section: "before" }}
+                search={{ section: "day1", part: "pre-event" }}
                 hash={item.id}
                 className="surface-interactive group flex w-full items-center gap-4 px-4 py-5 sm:px-5"
               >

@@ -12,6 +12,7 @@ import { MotionConfig } from "motion/react";
 import appCss from "../styles.css?url";
 import { SiteChrome, SiteFooter } from "@/components/site/SiteChrome";
 import { NotFound } from "@/components/site/NotFound";
+import { MorningNotification } from "@/components/site/MorningNotification";
 import { EVENT } from "@/lib/event";
 // Loaded with the shell so `?demo=1` is picked up on any page.
 import "@/lib/demo";
@@ -99,6 +100,7 @@ function RootComponent() {
         Skip to main content
       </a>
       <SiteChrome />
+      <MorningNotification />
       <main id="content" className="min-h-dvh">
         {/* Required: nested routes render here. */}
         <Outlet />

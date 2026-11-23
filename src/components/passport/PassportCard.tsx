@@ -86,7 +86,7 @@ export function PassportCard({
         ) : (
           <Link
             to="/activities"
-            search={{ section: "before" }}
+            search={{ section: "day1", part: "pre-event" }}
             hash="first-stroke"
             className={`group mt-5 flex items-center gap-4 rounded-2xl p-3.5 transition-colors hover:border-silver/70 ${GLASS}`}
           >

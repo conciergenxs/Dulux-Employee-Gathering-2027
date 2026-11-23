@@ -12,8 +12,7 @@ export const TEXT_LINK =
   "inline-flex min-h-9 items-center text-sm font-semibold text-white underline decoration-cyan/50 decoration-1 underline-offset-[6px] transition-colors hover:decoration-cyan";
 
 /** Picture on one side, words on the other (Infinity's check-in card). */
-export const MEDIA_CARD =
-  "mt-8 grid overflow-hidden rounded-[var(--radius-card)] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025))] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_50px_-32px_rgba(0,10,30,0.9)] ring-1 ring-white/12 md:grid-cols-[1fr_1.1fr]";
+export const MEDIA_CARD = "surface mt-8 grid overflow-hidden md:grid-cols-[1fr_1.1fr]";
 
 /** The picture side of a media card, with the mood label where it applies. */
 export function MediaSide({
@@ -77,7 +76,10 @@ export function CheckInCard({
 
 export function MoodTag() {
   return (
-    <span className="absolute left-3 top-3 rounded-full bg-navy-950/60 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur-sm">
+    <span
+      data-tone="dark"
+      className="absolute left-3 top-3 rounded-full bg-navy-950/60 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur-sm"
+    >
       Referensi suasana
     </span>
   );
@@ -169,6 +171,9 @@ export function PartChips<T extends string>({
       {parts.map((chip, i) => {
         const on = chip.id === active;
         return (
+          // Written for the white band the chips sit on: the selected chip is
+          // the KV blue gradient with white type, the rest white with a navy hairline.
+          // Explicit colours, so the white band's re-inking doesn't touch them.
           <button
             key={chip.id}
             type="button"
@@ -177,24 +182,27 @@ export function PartChips<T extends string>({
             onClick={() => onChange(chip.id)}
             className={`relative flex shrink-0 items-center gap-3 rounded-2xl border py-2 pl-2 pr-4 text-left transition-colors duration-200 active:scale-[0.98] ${
               on
-                ? "border-cyan/60 bg-white/[0.1] text-white"
-                : "border-white/12 bg-white/[0.04] text-white/80 hover:border-cyan/40"
+                ? "border-transparent bg-[image:var(--gradient-kv-blue)] text-[#ffffff] shadow-[0_8px_20px_-10px_rgba(13,74,128,0.7)]"
+                : "border-[#0a2c52]/15 bg-[#ffffff] text-[#0a2c52] hover:border-[#1d6aa8]/50"
             }`}
           >
             <span
               className={`grid size-9 shrink-0 place-items-center rounded-xl ${
-                on
-                  ? "bg-[image:var(--gradient-together)] text-navy-950"
-                  : "bg-white/[0.08] text-cyan"
+                on ? "bg-[#ffffff]/20 text-[#ffffff]" : "bg-[#1d6aa8]/10 text-[#1d6aa8]"
               }`}
             >
               <chip.icon className="size-4" />
             </span>
             <span>
               <span className="block whitespace-nowrap text-sm font-semibold">
-                <span className="text-white/45">0{i + 1}</span> {chip.label}
+                <span className={on ? "text-[#ffffff]/70" : "text-[#5d7896]"}>0{i + 1}</span>{" "}
+                {chip.label}
               </span>
-              <span className="block whitespace-nowrap text-[0.6875rem] text-white/55">
+              <span
+                className={`block whitespace-nowrap text-[0.6875rem] ${
+                  on ? "text-[#ffffff]/80" : "text-[#5d7896]"
+                }`}
+              >
                 {chip.sub}
               </span>
             </span>

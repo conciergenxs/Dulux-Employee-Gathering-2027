@@ -11,12 +11,12 @@ import {
   Luggage,
   Compass,
   MapPin,
-  Plane,
   Shirt,
   type LucideIcon,
 } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
-import { KvTexture } from "@/components/site/PageField";
+import { Band } from "@/components/site/Band";
+import { Emphasis } from "@/components/site/Emphasis";
 import { Reveal } from "@/components/site/Reveal";
 import { MotionImage } from "@/components/site/MotionImage";
 import { Lightbox } from "@/components/site/Lightbox";
@@ -92,17 +92,21 @@ function GuidePage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(50rem_26rem_at_50%_22rem,rgba(56,160,255,0.13)_0%,rgba(56,160,255,0)_70%),linear-gradient(180deg,#0d4a80_0rem,#0d4a80_6rem,#0c4274_45%,#0b3c6b_100%)]"
         />
-        <KvTexture side="right" className="top-[-3rem]" />
-        <KvTexture side="left" className="top-[38%]" />
 
-        <AtAGlance />
+        {/* On white straight under the hero, as on Schedule; Dress Code
+            continues the same white band below. */}
+        <Band tone="light" fade className="pt-10 sm:pt-12">
+          <AtAGlance />
+        </Band>
         <SectionNav />
 
-        <div id="guide-sections" className="px-5 pb-16 sm:pb-10">
+        <div id="guide-sections" className="px-5">
           <div className="mx-auto max-w-5xl">
             {/* ── Dress code ────────────────────────────────────── */}
             <GuideSection
               id="dress-code"
+              tone="light"
+              pattern={false}
               eyebrow="Dress Code"
               title="What to wear"
               text="Dress code untuk Kick-off Night di Day 2."
@@ -152,6 +156,8 @@ function GuidePage() {
             {/* ── Venue ─────────────────────────────────────────── */}
             <GuideSection
               id="venue"
+              tone="dark"
+              palm="left"
               eyebrow="Venue Photos & Location"
               title="Swissôtel Jakarta PIK Avenue"
               text="Tempat kita check-in, menginap, dan berkumpul selama tiga hari acara."
@@ -199,6 +205,7 @@ function GuidePage() {
             {/* ── Travel tips ───────────────────────────────────── */}
             <GuideSection
               id="travel"
+              tone="light"
               eyebrow="Travel Tips"
               title="Before you arrive"
               text="Siapkan tiga hal ini sebelum berangkat, lalu ikuti alur check-in saat tiba di hotel."
@@ -212,7 +219,7 @@ function GuidePage() {
                   action={
                     <Link
                       to="/activities"
-                      search={{ section: "before" }}
+                      search={{ section: "day1", part: "pre-event" }}
                       hash="first-stroke"
                       className={INLINE_LINK}
                     >
@@ -269,33 +276,23 @@ function GuidePage() {
             {/* ── Transport ─────────────────────────────────────── */}
             <GuideSection
               id="transport"
+              tone="dark"
+              palm="right"
               eyebrow="Transportation Information"
               title="Getting around"
               text="Selama acara, perjalanan antarlokasi diatur oleh tim acara."
             >
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="surface overflow-hidden">
-                  <div className="grid grid-cols-2 gap-1">
-                    <MotionImage src={bus} alt="An event coach bus" className="aspect-[4/3]" />
-                    <MotionImage
-                      src={busInterior}
-                      alt="Coach bus seating"
-                      className="aspect-[4/3]"
-                    />
-                  </div>
-                  <div className="p-5 sm:p-6">
-                    <InfoTitle icon={Bus}>Bus antarlokasi</InfoTitle>
-                    <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/70">
-                      Kamu berangkat dengan bus sesuai jadwal tim. Tempat duduk diatur per tim, dan
-                      timmu diumumkan saat check-in.
-                    </p>
-                  </div>
+              {/* One card: the bus. Every transfer during the event is by coach. */}
+              <div className="surface overflow-hidden lg:grid lg:grid-cols-[1.1fr_1fr]">
+                <div className="grid grid-cols-2 gap-1">
+                  <MotionImage src={bus} alt="An event coach bus" className="aspect-[4/3]" />
+                  <MotionImage src={busInterior} alt="Coach bus seating" className="aspect-[4/3]" />
                 </div>
-                <div className="surface p-5 sm:p-6">
-                  <InfoTitle icon={Plane}>Transfer bandara</InfoTitle>
+                <div className="flex flex-col justify-center p-5 sm:p-6 lg:p-8">
+                  <InfoTitle icon={Bus}>Bus antarlokasi</InfoTitle>
                   <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/70">
-                    Transfer dari bandara dikoordinasikan tim acara, termasuk bantuan untuk peserta
-                    yang tiba lebih awal.
+                    Kamu berangkat dengan bus sesuai jadwal tim. Tempat duduk diatur per tim, dan
+                    timmu diumumkan saat check-in.
                   </p>
                   <div className="mt-5 border-t border-white/[0.08] pt-4">
                     <Link to="/schedule" className={INLINE_LINK}>
@@ -307,7 +304,7 @@ function GuidePage() {
             </GuideSection>
 
             {/* ── FAQ ───────────────────────────────────────────── */}
-            <GuideSection id="faq" eyebrow="FAQ" title="Good to know" last>
+            <GuideSection id="faq" tone="light" eyebrow="FAQ" title="Good to know" last>
               <FaqList items={GUIDE_FAQ} />
             </GuideSection>
           </div>
@@ -491,6 +488,9 @@ function GuideSection({
   title,
   text,
   last = false,
+  tone,
+  palm,
+  pattern = true,
   children,
 }: {
   id: string;
@@ -498,30 +498,37 @@ function GuideSection({
   title: string;
   text?: string;
   last?: boolean;
+  /** Its ground: the guide alternates white and blue, section by section. */
+  tone: "light" | "dark";
+  palm?: "left" | "right";
+  /** Off when the band continues the one above it. */
+  pattern?: boolean;
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className={`relative scroll-mt-24 pt-14 sm:pt-20 ${last ? "pb-20 sm:pb-28" : ""}`}
-    >
-      <Reveal>
-        <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
-          {eyebrow}
-        </p>
-        <h2 className="wordmark mt-3 pr-[0.06em] text-[clamp(1.75rem,6.4vw,2.75rem)] text-white">
-          {title}
-        </h2>
-        {text && (
-          <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-white/70 sm:text-base">
-            {text}
+    <Band tone={tone} pattern={pattern} {...(palm ? { palm } : {})}>
+      <section
+        id={id}
+        className={`relative scroll-mt-24 pt-14 sm:pt-20 ${last ? "pb-20 sm:pb-28" : "pb-14 sm:pb-20"}`}
+      >
+        <Reveal>
+          <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
+            {eyebrow}
           </p>
-        )}
-      </Reveal>
-      <Reveal delay={0.06} className="mt-7">
-        {children}
-      </Reveal>
-    </section>
+          <h2 className="wordmark mt-3 pr-[0.06em] text-[clamp(1.75rem,6.4vw,2.75rem)] text-white">
+            <Emphasis text={title} />
+          </h2>
+          {text && (
+            <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-white/70 sm:text-base">
+              {text}
+            </p>
+          )}
+        </Reveal>
+        <Reveal delay={0.06} className="mt-7">
+          {children}
+        </Reveal>
+      </section>
+    </Band>
   );
 }
 

@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { Check, ChevronRight, Gift, Hand, MapPin, QrCode, Users } from "lucide-react";
+import { Check, ChevronRight, Hand, MapPin, QrCode, Users } from "lucide-react";
 import { PanelHead } from "@/components/passport/Checklist";
+import { RedemptionStatus } from "@/components/activities/Redemption";
 import { Reveal } from "@/components/site/Reveal";
 import { PrototypeNote } from "@/components/activities/Badges";
 import { useDemoMode } from "@/lib/demo";
@@ -22,8 +23,8 @@ const TABS: { id: TabId; label: string; caption: string }[] = [
 
 /**
  * Activity Quota (Infinity pattern; Dulux sitemap "Activity list & quota"):
- * a tab per day, listing that day's check-ins, and one for redemption, which
- * isn't announced yet.
+ * a tab per day, listing that day's check-ins, and one for redemption: the
+ * Sunset Social reward, unlocked by playing both games.
  */
 export function ActivityQuota({
   state,
@@ -100,11 +101,7 @@ export function ActivityQuota({
             className="mt-4"
           >
             {tab === "redemption" ? (
-              <ComingSoon
-                icon={Gift}
-                title="Redemption"
-                text="Info redemption akan diumumkan tim acara."
-              />
+              <RedemptionStatus />
             ) : (
               <ul className="space-y-2.5">
                 {activitiesOn(tab).map((a) => (
@@ -185,33 +182,6 @@ function ActivityRow({
       </span>
       <ChevronRight className="size-4 shrink-0 text-white/40 transition-transform group-hover:translate-x-0.5" />
     </button>
-  );
-}
-
-function ComingSoon({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: typeof Gift;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="surface flex items-center gap-4 px-4 py-5 sm:px-5">
-      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-sky">
-        <Icon className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex flex-wrap items-center gap-2">
-          <span className="text-base font-semibold text-white">{title}</span>
-          <span className="rounded-full border border-white/20 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-white/65">
-            Coming soon
-          </span>
-        </span>
-        <span className="mt-1 block text-sm text-white/60">{text}</span>
-      </span>
-    </div>
   );
 }
 

@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { BedDouble, Check, Gift, Hand, Lock, QrCode, ScanLine, Users } from "lucide-react";
 import { useOverlayLifecycle } from "@/hooks/use-overlay-lifecycle";
 import { SuccessMark } from "@/components/site/SuccessMark";
+import { BodyPortal } from "@/components/site/BodyPortal";
 import { QrFullscreen } from "@/components/passport/QrFullscreen";
 import { Badge, PrototypeNote } from "@/components/activities/Badges";
 import { useDemoMode } from "@/lib/demo";
@@ -132,33 +133,12 @@ export function CheckInPanel({ id, bare = false }: { id: CheckInId; bare?: boole
         label={PARTICIPANT.passCode}
         onClose={closeQr}
       />
-      <AnimatePresence>
-        {celebrate && <ArrivalDialog id={id} onClose={closeCelebrate} />}
-      </AnimatePresence>
+      <BodyPortal>
+        <AnimatePresence>
+          {celebrate && <ArrivalDialog id={id} onClose={closeCelebrate} />}
+        </AnimatePresence>
+      </BodyPortal>
     </div>
-  );
-}
-
-/**
- * A one-line check-in for a row in a list (the team-building stages): the
- * name's status on the right, and for a self check-in, the button itself.
- */
-export function CompactCheckIn({ id }: { id: CheckInId }) {
-  const state = useParticipant();
-  const at = state.checkIns[id];
-  const locked = isLocked(id, state.checkIns);
-  if (at) return <Badge tone="done">Checked in</Badge>;
-  if (BY_ID[id].mode === "crew") return <Badge tone="pending">Crew scan</Badge>;
-  return (
-    <button
-      type="button"
-      disabled={locked}
-      onClick={() => actions.checkIn(id)}
-      className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border-[1.5px] border-silver/60 px-3.5 text-[0.8125rem] font-semibold text-white transition-colors hover:border-silver hover:bg-white/[0.06] disabled:opacity-45"
-    >
-      {locked ? <Lock className="size-3.5" /> : <Check className="size-3.5" strokeWidth={2.5} />}
-      Check in
-    </button>
   );
 }
 

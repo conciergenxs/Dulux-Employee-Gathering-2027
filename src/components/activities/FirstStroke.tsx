@@ -160,7 +160,10 @@ function Picker({
  */
 function KvWindow({ children }: { children: ReactNode }) {
   return (
-    <div className="relative isolate overflow-hidden rounded-[0.75rem_2.75rem_0.75rem_2.75rem] border-[2.5px] border-silver p-5 shadow-[0_0_0_1px_rgba(8,18,36,0.7),0_0_24px_rgba(150,215,255,0.22),0_30px_60px_-30px_rgba(0,8,30,0.9)] sm:p-7 lg:rounded-[1rem_4rem_1rem_4rem] lg:p-9">
+    <div
+      data-tone="dark"
+      className="relative isolate overflow-hidden rounded-[0.75rem_2.75rem_0.75rem_2.75rem] border-[2.5px] border-silver p-5 shadow-[0_0_0_1px_rgba(8,18,36,0.7),0_0_24px_rgba(150,215,255,0.22),0_30px_60px_-30px_rgba(0,8,30,0.9)] sm:p-7 lg:rounded-[1rem_4rem_1rem_4rem] lg:p-9"
+    >
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_70%,rgba(56,160,255,0.32)_0%,rgba(56,160,255,0)_72%),linear-gradient(180deg,#081a2f_0%,#0a2340_30%,#0b3354_55%,#0e5f8f_85%,#1290c3_100%)]"

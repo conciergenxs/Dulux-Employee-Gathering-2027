@@ -5,7 +5,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { z } from "zod";
 import { PassportCard } from "@/components/passport/PassportCard";
 import { PageHero } from "@/components/site/PageHero";
-import { KvTexture, PageField } from "@/components/site/PageField";
+import { Band } from "@/components/site/Band";
 import { Checklist } from "@/components/passport/Checklist";
 import { ActivityDetail, ActivityQuota } from "@/components/passport/ActivityQuota";
 import { QUOTA_ACTIVITIES } from "@/lib/quota";
@@ -81,20 +81,24 @@ function PassportPage() {
       {/* The planner sitemap's Passport, in its order: the pass (in the
           hero, above), your checklist, activity quota (with the redemption
           tab), FAQ. The same order as the Infinity passport. One column on
-          every screen. */}
-      <PageField>
-        <KvTexture side="right" className="top-[-3rem]" />
-        <KvTexture side="left" className="top-[38%]" />
-        <div className="relative mx-auto max-w-2xl lg:px-5 lg:pb-24 lg:pt-14">
-          <Checklist state={state} />
-          <ActivityQuota state={state} onOpen={(id) => open({ a: id })} />
-          <FaqSection
-            items={PASSPORT_FAQ}
-            narrow
-            className="pb-20 pt-14 sm:pt-16 lg:px-0 lg:pb-0"
-          />
-        </div>
-      </PageField>
+          every screen, alternating white and blue. */}
+      <div className="overflow-x-clip">
+        <Band tone="light" className="pb-14 sm:pb-16">
+          <div className="relative mx-auto max-w-2xl lg:px-5">
+            <Checklist state={state} />
+          </div>
+        </Band>
+        <Band tone="dark" palm="left" className="pb-14 sm:pb-16">
+          <div className="relative mx-auto max-w-2xl lg:px-5">
+            <ActivityQuota state={state} onOpen={(id) => open({ a: id })} />
+          </div>
+        </Band>
+        <Band tone="light" className="pb-20 sm:pb-24">
+          <div className="relative mx-auto max-w-2xl lg:px-5">
+            <FaqSection items={PASSPORT_FAQ} narrow className="pt-14 sm:pt-16 lg:px-0" />
+          </div>
+        </Band>
+      </div>
 
       <Sheet open={Boolean(activity)} onClose={close} title={activity?.name ?? "Activity"}>
         {activity && (

@@ -20,8 +20,8 @@ import {
   ChromeDefs,
   ChromeLine,
   KvEyebrow,
+  KvLinePattern,
   PalmGrove,
-  RootedPalm,
   Sparkle,
   TileCluster,
   TileWall,
@@ -57,13 +57,10 @@ const SHOW_PRE_EVENT_SECTIONS = false;
 function HomePage() {
   return (
     <>
-      {/* The hero and the journey share one surface: the KV wall belongs to
-          the hero but runs on past its foot and dissolves into the journey's
-          denim, so there is no line where one section ends. */}
-      <div className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#0d4a80_0%,#0d4a80_40%,#0b3c6b_100%)]">
-        <Hero />
-        <Journey />
-      </div>
+      {/* Dark, light, dark: the KV hero, the journey on white, then the
+          footer, so the page has a rhythm instead of one long blue field. */}
+      <Hero />
+      <Journey />
       {SHOW_PRE_EVENT_SECTIONS && (
         <>
           <RoadToEvent />
@@ -85,22 +82,20 @@ function HomePage() {
 function Hero() {
   return (
     <section
-      className="relative flex min-h-[100svh] flex-col px-[1.125rem] pb-5 pt-[5.5rem] sm:px-6 sm:pb-7 sm:pt-[6.25rem] lg:px-[clamp(2.5rem,7.5vw,9rem)] lg:pb-[clamp(1.75rem,5svh,3.25rem)] lg:pt-[clamp(5.75rem,12svh,7.25rem)]"
+      className="relative isolate flex min-h-[100svh] flex-col justify-center bg-[#0d4a80] px-[1.125rem] pb-10 pt-[6rem] sm:px-6 sm:pb-12 sm:pt-[7rem] lg:justify-start lg:px-[clamp(2.5rem,7.5vw,9rem)] lg:pb-[clamp(1.75rem,5svh,3.25rem)] lg:pt-[clamp(5.75rem,12svh,7.25rem)]"
       style={{ "--kv-cell": "clamp(5.25rem, 9.6vw, 9.5rem)" } as CSSProperties}
     >
       <ChromeDefs />
-      {/* The wall runs 9rem past the hero's foot and fades out over its last
-          13rem, into the journey's denim. */}
-      <TileWall className="absolute inset-x-0 -bottom-36 top-0 -z-20 [mask-image:linear-gradient(to_bottom,#000_calc(100%-13rem),transparent_100%)]" />
+      <TileWall className="absolute inset-0 -z-20" />
       <motion.div
         initial={{ opacity: 0, scale: 0.985 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
-        className="relative flex flex-1 flex-col overflow-hidden rounded-[0.75rem_3rem_0.75rem_3rem] border-[3px] border-[#dfe6ec] shadow-[0_0_0_1px_rgba(8,18,36,0.7),0_0_30px_rgba(150,215,255,0.35),0_30px_80px_-30px_rgba(0,8,30,0.9)] sm:rounded-[1rem_5rem_1rem_5rem] lg:rounded-[1.25rem_7.5rem_1.25rem_7.5rem]"
+        className="relative mx-auto flex w-full max-w-[28rem] flex-col overflow-hidden sm:max-w-[34rem] rounded-[0.75rem_3rem_0.75rem_3rem] lg:max-w-none lg:flex-1 border-[3px] border-[#dfe6ec] shadow-[0_0_0_1px_rgba(8,18,36,0.7),0_0_30px_rgba(150,215,255,0.35),0_30px_80px_-30px_rgba(0,8,30,0.9)] sm:rounded-[1rem_5rem_1rem_5rem] lg:rounded-[1.25rem_7.5rem_1.25rem_7.5rem]"
       >
         {/* The window: deep navy at the top, glowing down to cyan, with a
             pool of light behind the wordmark and palms in silhouette. */}
-        <div className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-5 pb-7 pt-7 text-center shadow-[inset_0_0_22px_rgba(160,220,255,0.3)] sm:px-8 sm:pb-10 sm:pt-12 lg:pb-[clamp(1.5rem,4svh,3rem)] lg:pt-[clamp(1.75rem,5svh,3.5rem)]">
+        <div className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-5 pb-8 pt-9 text-center shadow-[inset_0_0_22px_rgba(160,220,255,0.3)] sm:px-8 sm:pb-10 sm:pt-11 lg:pb-[clamp(1.5rem,4svh,3rem)] lg:pt-[clamp(1.75rem,5svh,3.5rem)]">
           <div
             aria-hidden
             className="absolute inset-0 -z-20 bg-[radial-gradient(46%_30%_at_50%_56%,rgba(56,160,255,0.5)_0%,rgba(56,160,255,0)_72%),linear-gradient(180deg,#081a2f_0%,#0a2340_26%,#0b3354_46%,#0e5f8f_68%,#1290c3_88%,#17a3d3_100%)]"
@@ -109,12 +104,8 @@ function Hero() {
             <PalmGrove />
           </div>
 
-          {/* Below a laptop the window is tall and its height varies a lot
-              from phone to phone, so the gaps are spacers that share out the
-              room (within limits) instead of fixed margins: no dead band
-              above the lockup or under the countdown on a tall phone, and
-              still one screen on a small one. */}
-          <div aria-hidden className="grow lg:hidden" />
+          {/* Below a laptop the window is as tall as its content, with one
+              even rhythm inside; the wall shows above and below it. */}
           {/* 1 · Lockup */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -139,8 +130,8 @@ function Hero() {
           </motion.div>
 
           {/* 2 · The wordmark */}
-          <div aria-hidden className="max-h-[4.25rem] min-h-[1.5rem] grow basis-6 lg:hidden" />
-          <h1 className="text-[clamp(2.5rem,min(13.4vw,13svh),9.5rem)] leading-none lg:mt-[clamp(1.25rem,4.5svh,2.75rem)]">
+          <div aria-hidden className="h-7 shrink-0 sm:h-8 lg:hidden" />
+          <h1 className="text-[clamp(2.5rem,min(13.4vw,13svh),9.5rem)] sm:text-[4.5rem] lg:text-[clamp(2.5rem,min(13.4vw,13svh),9.5rem)] leading-none lg:mt-[clamp(1.25rem,4.5svh,2.75rem)]">
             <span className="sr-only">Greater Together</span>
             {["Greater", "Together"].map((word, i) => (
               <motion.span
@@ -166,27 +157,27 @@ function Hero() {
             ))}
           </h1>
 
-          <div aria-hidden className="max-h-[3.25rem] min-h-[1.5rem] grow basis-6 lg:hidden" />
+          <div aria-hidden className="h-6 shrink-0 sm:h-7 lg:hidden" />
           <motion.dl
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
-            className="flex flex-col items-center gap-1 text-[clamp(1.0625rem,5vw,1.25rem)] font-semibold leading-snug tracking-[-0.005em] text-white drop-shadow-[0_2px_10px_rgba(0,20,50,0.5)] sm:flex-row sm:gap-0 sm:text-[1.25rem] lg:mt-[clamp(1.25rem,3.4svh,2rem)] lg:text-[clamp(1.125rem,2.6svh,1.375rem)]"
+            className="flex flex-col items-center gap-0.5 text-[clamp(1.0625rem,5vw,1.25rem)] font-semibold leading-snug tracking-[-0.005em] [&_dd]:whitespace-nowrap text-white drop-shadow-[0_2px_10px_rgba(0,20,50,0.5)] lg:flex-row lg:gap-0 sm:text-[1.25rem] lg:mt-[clamp(1.25rem,3.4svh,2rem)] lg:text-[clamp(1.125rem,2.6svh,1.375rem)]"
           >
             <div>
               <dt className="sr-only">When</dt>
               <dd>{EVENT.datesLabel}</dd>
             </div>
-            <div className="flex items-center sm:before:mx-4 sm:before:size-1.5 sm:before:rounded-full sm:before:bg-white/70 sm:before:content-['']">
+            <div className="flex items-center lg:before:mx-4 lg:before:size-1.5 lg:before:rounded-full lg:before:bg-white/70 lg:before:content-['']">
               <dt className="sr-only">Where</dt>
               <dd>{EVENT.venue}</dd>
             </div>
           </motion.dl>
 
-          <div aria-hidden className="max-h-[4.75rem] min-h-[1.75rem] grow basis-7 lg:hidden" />
-          {/* On a phone or tablet there is no tray: the countdown and the
-              pass follow the details inside the window. On a laptop they move
-              down into the tray, side by side. */}
+          <div aria-hidden className="h-7 shrink-0 sm:h-8 lg:hidden" />
+          {/* On a phone or tablet the countdown closes the window and the
+              pass sits below it, on the wall. On a laptop both move into the
+              tray, side by side. */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -194,12 +185,7 @@ function Hero() {
             className="w-full max-w-[24rem] sm:max-w-[28rem] lg:hidden"
           >
             <HeroCountdown />
-            {/* The pass sits right under the countdown, the same width as
-                it: one action group, set apart from the details above by the
-                larger gap. */}
-            <PassButton className="mt-4 flex w-full sm:mt-5" />
           </motion.div>
-          <div aria-hidden className="grow lg:hidden" />
         </div>
 
         {/* 3 · The tray (laptop only): the KV's glass band, with the frame
@@ -217,6 +203,16 @@ function Hero() {
             <PassButton />
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* Phone and tablet: the one action, outside the window, full width. */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 1 }}
+        className="mx-auto mt-8 w-full max-w-[28rem] sm:mt-9 sm:max-w-[34rem] lg:hidden"
+      >
+        <PassButton className="flex w-full" />
       </motion.div>
     </section>
   );
@@ -255,7 +251,7 @@ function HeroCountdown() {
           <div key={label} className="flex flex-1 items-center">
             {i > 0 && <span className="h-8 w-px bg-white/20" />}
             <div className="flex-1">
-              <div className="text-[clamp(1.75rem,8.8vw,2.375rem)] font-bold leading-none tabular-nums lg:text-[2.125rem] tracking-tight text-white">
+              <div className="text-[clamp(1.75rem,8.8vw,2.375rem)] font-bold leading-none tabular-nums tracking-tight text-white lg:text-[2.125rem]">
                 {value === null ? "--" : String(value).padStart(2, "0")}
               </div>
               <div className="mt-1.5 text-[0.75rem] text-white/75 sm:text-xs lg:mt-1">{label}</div>
@@ -343,7 +339,7 @@ function ChecklistLink({
     <li>
       <Link
         to="/activities"
-        search={{ section: "before" }}
+        search={{ section: "day1", part: "pre-event" }}
         hash={hash}
         className="group flex items-center gap-3.5 py-3.5"
       >
@@ -500,45 +496,43 @@ function PhaseCorner() {
 function Journey() {
   return (
     <section
-      className="relative isolate px-5 pb-20 pt-20 sm:pb-28 sm:pt-28"
+      className="relative isolate overflow-hidden bg-white px-5 pb-20 pt-20 sm:pb-28 sm:pt-28"
       aria-labelledby="journey-title"
     >
-      {/* No background of its own: it sits on the surface it shares with the
-          hero, with a soft light behind the heading and one palm on each
-          side, rooted at the foot of the section and fading as it goes down
-          (never to nothing, so it stands rather than floats). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0rem,#000_9rem,#000_45%,rgba(0,0,0,0.45)_100%)]"
-      >
-        <div className="absolute inset-x-0 top-0 h-[40rem] bg-[radial-gradient(45%_50%_at_50%_30%,rgba(56,160,255,0.22)_0%,rgba(56,160,255,0)_75%)]" />
-        <RootedPalm className="left-[-12.5rem] top-[3rem] w-[24rem] opacity-30 sm:left-[-15rem] sm:w-[30rem] lg:left-[calc(50%-54rem)] lg:top-[4rem] lg:w-[30rem] lg:opacity-25" />
-        <RootedPalm className="right-[-12.5rem] top-[12rem] w-[24rem] -scale-x-100 opacity-30 sm:right-[-15rem] sm:top-[9rem] sm:w-[30rem] lg:right-[calc(50%-54rem)] lg:top-[10rem] lg:w-[30rem] lg:opacity-25" />
-      </div>
+      {/* White, with the KV wall drawn as outlines in the top corners: the
+          same language as the hero, quieter. */}
+      <KvLinePattern className="-z-10" />
       <div className="mx-auto max-w-6xl">
-        {/* Header: the hero's voice, centred. */}
+        {/* Header: navy, with the line that carries the idea in the KV's blue. */}
         <Reveal className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <KvEyebrow>The Event Journey</KvEyebrow>
+          <KvEyebrow tone="dark">The Event Journey</KvEyebrow>
           <h2
             id="journey-title"
-            className="kv-heading mt-5 text-[clamp(1.5rem,7.4vw,3.5rem)] leading-[1.02] text-white sm:mt-6"
+            className="kv-heading mt-5 text-[clamp(1.5rem,7.4vw,3.5rem)] leading-[1.04] text-[#0a2c52] sm:mt-6"
           >
             <span className="block">Three days.</span>
-            <span className="block">One bigger picture</span>
+            <span className="text-emphasis block py-[0.04em]">One bigger picture</span>
             <span className="block">in the making.</span>
           </h2>
-          <p className="mt-5 max-w-xl text-[0.9375rem] leading-relaxed text-white/75 sm:mt-6 sm:text-base">
+          <p className="mt-5 max-w-xl text-[0.9375rem] leading-relaxed text-[#4b6585] sm:mt-6 sm:text-base">
             Setiap karyawan membawa kepingannya sendiri. Setiap interaksi menciptakan koneksi.
             Setiap komitmen membuat gambaran besar ini semakin utuh.
           </p>
         </Reveal>
 
         {/* Three KV panels, one per phase. */}
-        <ol className="mx-auto mt-12 grid max-w-[30rem] gap-5 sm:mt-16 lg:max-w-none lg:grid-cols-3 lg:gap-6">
+        {/* A swipeable row on a phone and tablet, the next card peeking in;
+            three across on a laptop. */}
+        <ol className="no-scrollbar -mx-5 mt-10 flex snap-x snap-mandatory scroll-px-5 gap-4 overflow-x-auto px-5 pb-2 pt-2 sm:mt-14 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
           {PHASES.map((p, i) => {
             return (
-              <Reveal as="li" key={p.id} delay={0.08 + i * 0.08} className="h-full">
-                <article className="group relative isolate flex h-full flex-col overflow-hidden rounded-[0.75rem_2.75rem_0.75rem_2.75rem] border-[2.5px] border-[#dfe6ec] bg-[linear-gradient(180deg,#0a1d36_0%,#0b2b4f_50%,#0d4a7c_100%)] p-6 shadow-[0_0_0_1px_rgba(8,18,36,0.7),0_0_24px_rgba(150,215,255,0.22),0_30px_60px_-30px_rgba(0,8,30,0.9)] transition-transform duration-500 [--tile:3.25rem] hover:-translate-y-1 sm:p-7 sm:[--tile:3.5rem] lg:[--tile:clamp(3rem,3.8vw,3.5rem)]">
+              <Reveal
+                as="li"
+                key={p.id}
+                delay={0.08 + i * 0.08}
+                className="h-auto w-[84%] max-w-[22rem] shrink-0 snap-start sm:w-[58%] lg:h-full lg:w-auto lg:max-w-none"
+              >
+                <article className="group relative isolate flex h-full flex-col overflow-hidden rounded-[0.75rem_2.75rem_0.75rem_2.75rem] border-[2.5px] border-[#dfe6ec] bg-[linear-gradient(180deg,#0a1d36_0%,#0b2b4f_50%,#0d4a7c_100%)] p-6 transition-transform duration-500 [--tile:3.25rem] hover:-translate-y-1 sm:p-7 sm:[--tile:3.5rem] lg:[--tile:clamp(3rem,3.8vw,3.5rem)]">
                   <PhasePhoto id={p.id} />
                   <PhaseCorner />
                   {/* A soft fade at the foot keeps the text crisp over the field. */}

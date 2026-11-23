@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { MapPin } from "lucide-react";
-import { KvTexture, PageField } from "@/components/site/PageField";
+import { Band } from "@/components/site/Band";
+import { Emphasis } from "@/components/site/Emphasis";
 import { PageHero } from "@/components/site/PageHero";
 import { DAYS, EVENT, RUNDOWN, type DayId } from "@/lib/event";
 
@@ -56,10 +57,9 @@ function SchedulePage() {
         intro="Jadwal acara per hari, lengkap dengan hal yang perlu kamu siapkan."
       />
 
-      <PageField>
-        <KvTexture side="right" className="top-[-3rem]" />
-        <KvTexture side="left" className="top-[38%]" />
-        <section className="relative px-5 pb-20 sm:pb-28">
+      {/* The rundown on white: the page goes blue (hero), white, blue (footer). */}
+      <Band tone="light">
+        <section className="relative px-5 pb-20 pt-12 sm:pb-28 sm:pt-16">
           <div className="relative mx-auto max-w-6xl">
             <div
               role="tablist"
@@ -121,7 +121,7 @@ function SchedulePage() {
             </AnimatePresence>
           </div>
         </section>
-      </PageField>
+      </Band>
     </>
   );
 }
@@ -132,21 +132,20 @@ const EASE = [0.22, 1, 0.36, 1] as const;
  * One day as a plain rundown: the day's header (date, name, session count, one
  * line), then one row per session with the time on the left, a dot on the
  * line, the name, one instruction if there is one, and where it happens.
- * Until a clock time is confirmed (`time` in event.ts), the time column says
- * TBC.
+ * The time column reads the session's clock time from event.ts.
  */
 function Rundown({ day }: { day: DayId }) {
-  const { date, title, intro, sessions, footnote } = RUNDOWN[day];
+  const { date, title, intro, sessions } = RUNDOWN[day];
   return (
     <div className="mx-auto max-w-2xl">
       <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
         {date}
       </p>
       <div className="mt-2 flex items-end justify-between gap-4 border-b border-white/12 pb-5">
-        <h2 className="text-[clamp(1.75rem,6.4vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] text-white">
-          {title}
+        <h2 className="wordmark text-[clamp(1.625rem,6.4vw,2.25rem)] text-white">
+          <Emphasis text={title} />
         </h2>
-        <p className="shrink-0 pb-1 text-sm text-white/55">{sessions.length} sessions</p>
+        <p className="shrink-0 pb-1 text-sm text-white/55">{sessions.length} sesi</p>
       </div>
       <p className="mt-5 text-[1rem] leading-relaxed text-white/70">{intro}</p>
 
@@ -159,19 +158,20 @@ function Rundown({ day }: { day: DayId }) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.04 * i, ease: EASE }}
-              className="relative grid grid-cols-[5.75rem_1.25rem_minmax(0,1fr)] gap-x-2.5 sm:grid-cols-[8.5rem_1.25rem_minmax(0,1fr)] sm:gap-x-5"
+              className="relative grid grid-cols-[5.75rem_1rem_minmax(0,1fr)] gap-x-2 sm:grid-cols-[8.5rem_1.25rem_minmax(0,1fr)] sm:gap-x-5"
             >
               {/* Time */}
-              <p className="pt-[0.2rem] text-[0.9375rem] font-semibold tabular-nums text-white sm:text-base">
-                {item.time ?? "TBC"}
+              <p className="whitespace-nowrap pt-[0.3rem] text-[0.875rem] font-semibold tabular-nums tracking-[-0.01em] text-white sm:pt-[0.2rem] sm:text-base">
+                {item.time}
+                {item.end && `–${item.end}`}
               </p>
 
-              {/* Dot on the line */}
+              {/* A plain dot, and the line that joins it to the next. */}
               <div aria-hidden className="relative flex justify-center">
-                <span className="relative z-10 mt-[0.3rem] grid size-[1.125rem] place-items-center rounded-full border-2 border-cyan bg-navy-900">
-                  <span className="size-1.5 rounded-full bg-cyan" />
-                </span>
-                {!last && <span className="absolute bottom-0 top-[1.4rem] w-px bg-white/15" />}
+                <span className="relative z-10 mt-[0.45rem] size-2.5 rounded-full bg-[#1d6aa8] ring-4 ring-white" />
+                {!last && (
+                  <span className="absolute bottom-[-0.45rem] top-[0.45rem] w-px bg-[#0a2c52]/15" />
+                )}
               </div>
 
               {/* Session */}
@@ -194,10 +194,6 @@ function Rundown({ day }: { day: DayId }) {
           );
         })}
       </ol>
-
-      <p className="mt-10 border-t border-white/12 pt-5 text-[0.875rem] leading-relaxed text-white/55">
-        {footnote}
-      </p>
     </div>
   );
 }

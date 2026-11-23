@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { Check, ChevronRight, Clock, Gift, MapPin, QrCode, Users } from "lucide-react";
+import { Check, ChevronRight, Gift, Hand, MapPin, QrCode, Users } from "lucide-react";
 import { PanelHead } from "@/components/passport/Checklist";
 import { Reveal } from "@/components/site/Reveal";
 import { PrototypeNote } from "@/components/activities/Badges";
 import { useDemoMode } from "@/lib/demo";
-import { actions, type CheckInId, type ParticipantState } from "@/lib/participant";
-import { QUOTA_ACTIVITIES, stampsOf, type QuotaActivity } from "@/lib/quota";
+import { actions, useParticipant, type CheckInId, type ParticipantState } from "@/lib/participant";
+import { QUOTA_ACTIVITIES, activitiesOn, stampsOf, type QuotaActivity } from "@/lib/quota";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -15,15 +15,15 @@ type TabId = "day1" | "day2" | "day3" | "redemption";
 /** Three days, then the redemption (Dulux sitemap). */
 const TABS: { id: TabId; label: string; caption: string }[] = [
   { id: "day1", label: "Day 1", caption: "16 Dec · Swissôtel Jakarta PIK Avenue" },
-  { id: "day2", label: "Day 2", caption: "17 Dec" },
-  { id: "day3", label: "Day 3", caption: "18 Dec" },
+  { id: "day2", label: "Day 2", caption: "17 Dec · Land's End PIK 2 & ballroom" },
+  { id: "day3", label: "Day 3", caption: "18 Dec · Swissôtel Jakarta PIK Avenue" },
   { id: "redemption", label: "Redemption", caption: "Redemption" },
 ];
 
 /**
  * Activity Quota (Infinity pattern; Dulux sitemap "Activity list & quota"):
- * a tab per day and one for redemption. Day 1's two check-ins are listed;
- * the rest isn't finalised, so those tabs say so instead of inventing a list.
+ * a tab per day, listing that day's check-ins, and one for redemption, which
+ * isn't announced yet.
  */
 export function ActivityQuota({
   state,
@@ -99,9 +99,15 @@ export function ActivityQuota({
             transition={{ duration: 0.32, ease: EASE }}
             className="mt-4"
           >
-            {tab === "day1" ? (
+            {tab === "redemption" ? (
+              <ComingSoon
+                icon={Gift}
+                title="Redemption"
+                text="Info redemption akan diumumkan tim acara."
+              />
+            ) : (
               <ul className="space-y-2.5">
-                {QUOTA_ACTIVITIES.map((a) => (
+                {activitiesOn(tab).map((a) => (
                   <li key={a.id}>
                     <ActivityRow
                       activity={a}
@@ -111,18 +117,6 @@ export function ActivityQuota({
                   </li>
                 ))}
               </ul>
-            ) : tab === "redemption" ? (
-              <ComingSoon
-                icon={Gift}
-                title="Redemption"
-                text="Info redemption akan diumumkan tim acara."
-              />
-            ) : (
-              <ComingSoon
-                icon={Clock}
-                title={`Aktivitas ${current.label}`}
-                text="Daftar aktivitasnya akan muncul di sini setelah rundown final."
-              />
             )}
           </motion.div>
         </AnimatePresence>
@@ -167,8 +161,17 @@ function ActivityRow({
         </span>
         <span className="mt-2 flex items-center gap-2.5">
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/[0.08] px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-white/70">
-            <Users className="size-3 text-cyan" />
-            Crew scan
+            {activity.mode === "crew" ? (
+              <>
+                <Users className="size-3 text-cyan" />
+                Crew scan
+              </>
+            ) : (
+              <>
+                <Hand className="size-3 text-cyan" />
+                Self check-in
+              </>
+            )}
           </span>
           <span className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
             <motion.span
@@ -190,7 +193,7 @@ function ComingSoon({
   title,
   text,
 }: {
-  icon: typeof Clock;
+  icon: typeof Gift;
   title: string;
   text: string;
 }) {
@@ -223,16 +226,18 @@ export function ActivityDetail({
   onShowQr: () => void;
 }) {
   const demo = useDemoMode();
+  const arrived = Boolean(useParticipant().checkIns.welcome);
   const complete = claimed >= activity.quota;
+  const self = activity.mode === "self";
+  const locked = self && !arrived;
   return (
     <div className="pb-4">
-      <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.22em] text-sky">
-        {activity.day}
+      <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
+        {activity.dayLabel}
       </p>
       <h2 className="wordmark mt-2 pr-[0.06em] text-[clamp(1.75rem,7vw,2.25rem)] text-white">
         {activity.name}
       </h2>
-      <p className="mt-2 text-sm font-medium text-sky">{activity.tag}</p>
 
       <div className="mt-5 overflow-hidden rounded-[var(--radius-card)]">
         <motion.img
@@ -261,13 +266,16 @@ export function ActivityDetail({
 
       <div className="surface mt-5 flex gap-3 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/[0.08] text-cyan">
-          <Users className="size-[1.1rem]" />
+          {self ? <Hand className="size-[1.1rem]" /> : <Users className="size-[1.1rem]" />}
         </span>
         <span className="min-w-0">
-          <span className="block text-sm font-semibold text-white">Crew Check-In</span>
+          <span className="block text-sm font-semibold text-white">
+            {self ? "Self Check-In" : "Crew Check-In"}
+          </span>
           <span className="mt-0.5 block text-sm text-white/65">
-            Tunjukkan QR My Canvas Pass-mu ke crew di lokasi. Begitu dipindai, stamp-nya langsung
-            tercatat di sini.
+            {self
+              ? "Begitu kamu sudah di lokasi, tekan Check in now di bawah. Stamp-nya langsung tercatat di sini."
+              : "Tunjukkan QR My Canvas Pass-mu ke crew di lokasi. Begitu dipindai, stamp-nya langsung tercatat di sini."}
           </span>
         </span>
       </div>
@@ -275,28 +283,42 @@ export function ActivityDetail({
       <h3 className="mt-7 text-base font-semibold text-white">How It Works</h3>
       <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/70">{activity.how}</p>
 
-      <button
-        type="button"
-        onClick={onShowQr}
-        className="mt-8 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(100deg,#ffffff_0%,#eef2ff_50%,#cbd8ff_100%)] px-6 text-sm font-bold text-navy-900 active:scale-[0.98]"
-      >
-        <QrCode className="size-4" />
-        Show My QR
-      </button>
-
-      {demo && !complete && (
-        <div className="proto mt-4 p-3.5">
-          <PrototypeNote>
-            Mode demo. Di acara, scanner milik crew yang mencatat stamp ini.
-          </PrototypeNote>
+      {self ? (
+        <button
+          type="button"
+          disabled={complete || locked}
+          onClick={() => actions.checkIn(activity.id)}
+          className="mt-8 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#ffffff_0%,#eef1f4_55%,#cfd6dd_100%)] px-6 text-sm font-bold text-navy-900 active:scale-[0.98] disabled:opacity-50"
+        >
+          <Check className="size-4" strokeWidth={2.5} />
+          {complete ? "Checked in" : locked ? "After arrival check-in" : "Check in now"}
+        </button>
+      ) : (
+        <>
           <button
             type="button"
-            onClick={() => actions.checkIn(activity.id)}
-            className="btn btn-ghost mt-3 min-h-10 w-full text-[0.8125rem]"
+            onClick={onShowQr}
+            className="mt-8 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#ffffff_0%,#eef1f4_55%,#cfd6dd_100%)] px-6 text-sm font-bold text-navy-900 active:scale-[0.98]"
           >
-            Simulate crew scan
+            <QrCode className="size-4" />
+            Show My QR
           </button>
-        </div>
+
+          {demo && !complete && (
+            <div className="proto mt-4 p-3.5">
+              <PrototypeNote>
+                Mode demo. Di acara, scanner milik crew yang mencatat stamp ini.
+              </PrototypeNote>
+              <button
+                type="button"
+                onClick={() => actions.checkIn(activity.id)}
+                className="btn btn-ghost mt-3 min-h-10 w-full text-[0.8125rem]"
+              >
+                Simulate crew scan
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

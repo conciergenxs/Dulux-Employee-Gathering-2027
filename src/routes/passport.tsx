@@ -13,12 +13,15 @@ import { FaqSection } from "@/components/passport/PassportFaq";
 import { QrFullscreen } from "@/components/passport/QrFullscreen";
 import { Sheet } from "@/components/passport/Sheet";
 import { CheckInPanel } from "@/components/activities/CheckIn";
-import { ARRIVAL_STEPS, DAY1, EVENT, PASSPORT_FAQ } from "@/lib/event";
+import { ARRIVAL_STEPS, CHECK_INS, DAY1, EVENT, PASSPORT_FAQ } from "@/lib/event";
 import { PARTICIPANT, useParticipant, type CheckInId } from "@/lib/participant";
 
 const searchSchema = z.object({
   /** Open an activity sheet. */
-  a: z.enum(["welcome", "sunset-welcome"]).optional().catch(undefined),
+  a: z
+    .enum(CHECK_INS.map((c) => c.id) as [CheckInId, ...CheckInId[]])
+    .optional()
+    .catch(undefined),
   /** Open the full-screen QR. */
   qr: z.boolean().optional().catch(undefined),
 });
@@ -69,30 +72,27 @@ function PassportPage() {
 
   return (
     <>
-      <PageHero tight inline eyebrow={EVENT.name} title="My Canvas" accent="Pass" />
+      {/* The pass lives in the hero's window: no card of its own. */}
+      <PageHero tight inline eyebrow={EVENT.name} title="My Canvas" accent="Pass">
+        <PassportCard state={state} onEnlarge={() => open({ qr: true })} />
+      </PageHero>
       <SeeDetailsCue />
 
-      {/* The planner sitemap's Passport, in its order: the pass (QR, name,
-          checklist and activity), your checklist, activity quota (with the
-          redemption tab), FAQ. The same order as the Infinity passport.
-          Phone: one column, the pass first. Laptop: the pass stays in view on
-          the left while the rest scrolls beside it. */}
+      {/* The planner sitemap's Passport, in its order: the pass (in the
+          hero, above), your checklist, activity quota (with the redemption
+          tab), FAQ. The same order as the Infinity passport. One column on
+          every screen. */}
       <PageField>
-        <KvTexture side="right" className="top-0" />
-        <KvTexture side="left" className="bottom-16" />
-        <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:gap-16 lg:px-5 lg:pb-24">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <PassportCard state={state} onEnlarge={() => open({ qr: true })} />
-          </div>
-          <div className="relative">
-            <Checklist state={state} />
-            <ActivityQuota state={state} onOpen={(id) => open({ a: id })} />
-            <FaqSection
-              items={PASSPORT_FAQ}
-              narrow
-              className="pb-20 pt-14 sm:pt-16 lg:px-0 lg:pb-0"
-            />
-          </div>
+        <KvTexture side="right" className="top-[-3rem]" />
+        <KvTexture side="left" className="top-[38%]" />
+        <div className="relative mx-auto max-w-2xl lg:px-5 lg:pb-24 lg:pt-14">
+          <Checklist state={state} />
+          <ActivityQuota state={state} onOpen={(id) => open({ a: id })} />
+          <FaqSection
+            items={PASSPORT_FAQ}
+            narrow
+            className="pb-20 pt-14 sm:pt-16 lg:px-0 lg:pb-0"
+          />
         </div>
       </PageField>
 

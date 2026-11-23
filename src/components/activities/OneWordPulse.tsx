@@ -22,11 +22,7 @@ export function OneWordPulse() {
     <div className="surface p-5 sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="eyebrow">The One-Word Pulse</p>
-        {saved && !changing ? (
-          <Badge tone="done">Word submitted</Badge>
-        ) : (
-          <Badge tone="info">Day 1 · Evening</Badge>
-        )}
+        {saved && !changing && <Badge tone="done">Word submitted</Badge>}
       </div>
       <h4 className="t-h2 mt-3 text-white">
         One word for your <span className="text-together">hopes for 2027</span>

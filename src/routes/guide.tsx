@@ -16,6 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
+import { KvTexture } from "@/components/site/PageField";
 import { Reveal } from "@/components/site/Reveal";
 import { MotionImage } from "@/components/site/MotionImage";
 import { Lightbox } from "@/components/site/Lightbox";
@@ -27,7 +28,6 @@ import lobby from "@/assets/venue/lobby.webp";
 import room from "@/assets/venue/room.webp";
 import bus from "@/assets/transport/bus.webp";
 import busInterior from "@/assets/transport/bus-interior.webp";
-import heroPatternTop from "@/assets/pattern/hero-top.webp";
 import look1 from "@/assets/dresscode/look-1.webp";
 import look2 from "@/assets/dresscode/look-2.webp";
 import look3 from "@/assets/dresscode/look-3.webp";
@@ -83,15 +83,17 @@ function GuidePage() {
         intro="Semua info praktis untuk tiga hari acara, dalam satu halaman."
       />
 
-      {/* The page field: lit royal blue rather than flat navy, with soft glows
-          that alternate sides down the page. It sits behind everything, and
-          the cards keep their own solid surface, so text never sits on it
-          unbacked except the section headings, which stay high-contrast. */}
+      {/* The page field, as on the other pages: the KV wall's mid denim
+          the hero fades into, with a palm rooted at each side. The cards keep
+          their own solid surface, so text never sits on it unbacked except
+          the section headings, which stay high-contrast. */}
       <div className="relative isolate overflow-clip">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,transparent,#000_16rem)] bg-[radial-gradient(60rem_34rem_at_0%_8%,rgba(31,123,255,0.22)_0%,rgba(31,123,255,0)_70%),radial-gradient(56rem_32rem_at_100%_30%,rgba(60,202,255,0.14)_0%,rgba(60,202,255,0)_70%),radial-gradient(60rem_34rem_at_0%_55%,rgba(84,60,230,0.16)_0%,rgba(84,60,230,0)_70%),radial-gradient(56rem_32rem_at_100%_80%,rgba(31,123,255,0.2)_0%,rgba(31,123,255,0)_70%),linear-gradient(180deg,var(--navy-900)_0%,#03208a_14%,#021a76_45%,#03208a_75%,var(--navy-900)_100%)]"
+          className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(50rem_26rem_at_50%_22rem,rgba(56,160,255,0.13)_0%,rgba(56,160,255,0)_70%),linear-gradient(180deg,#0d4a80_0rem,#0d4a80_6rem,#0c4274_45%,#0b3c6b_100%)]"
         />
+        <KvTexture side="right" className="top-[-3rem]" />
+        <KvTexture side="left" className="top-[38%]" />
 
         <AtAGlance />
         <SectionNav />
@@ -101,7 +103,6 @@ function GuidePage() {
             {/* ── Dress code ────────────────────────────────────── */}
             <GuideSection
               id="dress-code"
-              texture="right"
               eyebrow="Dress Code"
               title="What to wear"
               text="Dress code untuk Kick-off Night di Day 2."
@@ -123,7 +124,7 @@ function GuidePage() {
                 </ul>
                 <div className="grid gap-4 bg-white/[0.05] p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-end md:gap-8">
                   <div>
-                    <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.22em] text-sky">
+                    <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
                       Day 2 · Kick-off Night
                     </p>
                     <p className="wordmark mt-2.5 pr-[0.06em] text-[clamp(1.5rem,5.6vw,2rem)] text-white">
@@ -238,7 +239,7 @@ function GuidePage() {
 
               {/* 2 · Arrival: one flow, across on a laptop, down on a phone. */}
               <div className="surface mt-5 p-5 sm:p-7">
-                <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.22em] text-sky">
+                <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
                   Arrival & check-in
                 </p>
                 <ol className="relative mt-5 grid gap-5 lg:grid-cols-5 lg:gap-4">
@@ -268,7 +269,6 @@ function GuidePage() {
             {/* ── Transport ─────────────────────────────────────── */}
             <GuideSection
               id="transport"
-              texture="left"
               eyebrow="Transportation Information"
               title="Getting around"
               text="Selama acara, perjalanan antarlokasi diatur oleh tim acara."
@@ -450,7 +450,7 @@ function SectionNav() {
         >
           <ul
             ref={listRef}
-            className="pointer-events-auto mx-auto grid w-full max-w-md grid-cols-5 gap-1 rounded-[1.5rem] border border-white/15 bg-navy-950/85 p-1.5 shadow-[0_20px_50px_-12px_rgba(0,6,40,0.95),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:flex sm:w-auto sm:max-w-max sm:rounded-full sm:p-1"
+            className="pointer-events-auto mx-auto grid w-full max-w-md grid-cols-5 gap-1 rounded-[1.5rem] border border-white/15 bg-navy-950/85 p-1.5 shadow-[0_20px_50px_-12px_rgba(0,10,30,0.95),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:flex sm:w-auto sm:max-w-max sm:rounded-full sm:p-1"
           >
             {SECTIONS.map((s) => {
               const on = s.id === active;
@@ -485,41 +485,12 @@ function SectionNav() {
   );
 }
 
-/**
- * Texture, not ornament: the KV's own corner, large and faint, bleeding off
- * the screen edge beside a section heading and fading into the field. It is
- * tied to its section, so it lands in the same place on every screen.
- */
-function Texture({ side }: { side: "left" | "right" }) {
-  const right = side === "right";
-  return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute -top-6 -z-10 w-[78vw] max-w-[34rem] [mask-image:linear-gradient(to_bottom,transparent,#000_35%)] sm:w-[52vw] ${
-        right
-          ? "right-[calc(min(0px,(64rem-100vw)/2)-1.25rem)]"
-          : "left-[calc(min(0px,(64rem-100vw)/2)-1.25rem)]"
-      }`}
-    >
-      <img
-        src={heroPatternTop}
-        alt=""
-        loading="lazy"
-        className={`block w-full select-none opacity-[0.22] [mask-image:radial-gradient(circle_at_0%_0%,#000_28%,transparent_70%)] ${
-          right ? "-scale-x-100" : ""
-        }`}
-      />
-    </div>
-  );
-}
-
 function GuideSection({
   id,
   eyebrow,
   title,
   text,
   last = false,
-  texture,
   children,
 }: {
   id: string;
@@ -527,8 +498,6 @@ function GuideSection({
   title: string;
   text?: string;
   last?: boolean;
-  /** A KV corner bleeding off this side of the screen, behind the heading. */
-  texture?: "left" | "right";
   children: ReactNode;
 }) {
   return (
@@ -536,10 +505,8 @@ function GuideSection({
       id={id}
       className={`relative scroll-mt-24 pt-14 sm:pt-20 ${last ? "pb-20 sm:pb-28" : ""}`}
     >
-      {texture && <Texture side={texture} />}
       <Reveal>
-        <p className="flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-sky sm:text-xs">
-          <span aria-hidden className="h-px w-8 bg-gradient-to-r from-white/0 to-sky/80" />
+        <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
           {eyebrow}
         </p>
         <h2 className="wordmark mt-3 pr-[0.06em] text-[clamp(1.75rem,6.4vw,2.75rem)] text-white">

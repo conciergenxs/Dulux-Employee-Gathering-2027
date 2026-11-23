@@ -1,11 +1,12 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useState } from "react";
-import { BedDouble, Gift, Lock, QrCode, ScanLine, Users } from "lucide-react";
+import { BedDouble, Check, Gift, Hand, Lock, QrCode, ScanLine, Users } from "lucide-react";
 import { useOverlayLifecycle } from "@/hooks/use-overlay-lifecycle";
 import { SuccessMark } from "@/components/site/SuccessMark";
 import { QrFullscreen } from "@/components/passport/QrFullscreen";
 import { Badge, PrototypeNote } from "@/components/activities/Badges";
 import { useDemoMode } from "@/lib/demo";
+import { CHECK_INS, type CheckIn } from "@/lib/event";
 import {
   PARTICIPANT,
   actions,
@@ -16,24 +17,32 @@ import {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const COPY: Record<CheckInId, { name: string; where: string }> = {
-  welcome: { name: "The Welcome Experience", where: "Registrasi, lobi hotel" },
-  "sunset-welcome": { name: "Sunset Welcome", where: "Venue malam" },
-};
+const BY_ID = Object.fromEntries(CHECK_INS.map((c) => [c.id, c])) as Record<CheckInId, CheckIn>;
+
+/**
+ * A self check-in opens once the participant has arrived. A crew check-in
+ * never locks: showing the QR is always the right move, and the crew decides.
+ */
+function isLocked(id: CheckInId, checkIns: Partial<Record<CheckInId, string>>) {
+  return BY_ID[id].mode === "self" && !checkIns.welcome;
+}
 
 /**
  * One check-in, wherever it is offered (the pass sheet and the Activities
- * page): its status, the QR to show the crew, and — set apart and labelled —
- * a button that stands in for the crew's scanner in this prototype.
+ * page): its status, then the way in. A crew check-in shows the QR to the
+ * crew, with — set apart and labelled — a button that stands in for the
+ * crew's scanner in this prototype. A self check-in is one button the
+ * participant presses once they're there.
  */
 export function CheckInPanel({ id, bare = false }: { id: CheckInId; bare?: boolean }) {
   const demo = useDemoMode();
   const state = useParticipant();
   const [qr, setQr] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
+  const item = BY_ID[id];
+  const self = item.mode === "self";
   const at = state.checkIns[id];
-  // The evening check-in follows the arrival one.
-  const locked = id === "sunset-welcome" && !state.checkIns.welcome;
+  const locked = isLocked(id, state.checkIns);
   const closeQr = useCallback(() => setQr(false), []);
   const closeCelebrate = useCallback(() => setCelebrate(false), []);
 
@@ -42,20 +51,20 @@ export function CheckInPanel({ id, bare = false }: { id: CheckInId; bare?: boole
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl bg-white/8 text-cyan">
-            <ScanLine className="size-[1.1rem]" />
+            {self ? <Hand className="size-[1.1rem]" /> : <ScanLine className="size-[1.1rem]" />}
           </span>
           <div>
-            <p className="t-micro text-muted-foreground">Check-in required</p>
-            <p className="text-sm font-semibold text-white">{COPY[id].where}</p>
+            <p className="t-micro text-muted-foreground">
+              {self ? "Self check-in" : "Crew check-in"}
+            </p>
+            <p className="text-sm font-semibold text-white">{item.where}</p>
           </div>
         </div>
         {at ? (
           <Badge tone="done">{id === "welcome" ? "Your piece has arrived" : "Checked in"}</Badge>
         ) : locked ? (
           <Badge tone="soon">After arrival check-in</Badge>
-        ) : (
-          <Badge tone="pending">Not checked in</Badge>
-        )}
+        ) : null}
       </div>
 
       {at ? (
@@ -71,20 +80,30 @@ export function CheckInPanel({ id, bare = false }: { id: CheckInId; bare?: boole
             </button>
           )}
         </p>
+      ) : self ? (
+        <button
+          type="button"
+          disabled={locked}
+          onClick={() => {
+            actions.checkIn(id);
+            setCelebrate(true);
+          }}
+          className="btn btn-primary mt-4 w-full font-bold sm:w-auto"
+        >
+          {locked ? <Lock className="size-4" /> : <Check className="size-4" strokeWidth={2.5} />}
+          Check in now
+        </button>
       ) : (
         <>
-          {/* In a card on the Activities page the QR is one tap away in the hero. */}
-          {!bare && (
-            <button
-              type="button"
-              onClick={() => setQr(true)}
-              disabled={locked}
-              className="btn btn-primary mt-4 w-full sm:w-auto"
-            >
-              {locked ? <Lock className="size-4" /> : <QrCode className="size-4" />}
-              Show my QR to the crew
-            </button>
-          )}
+          {/* Wherever a card asks for the QR, the QR is one tap away. */}
+          <button
+            type="button"
+            onClick={() => setQr(true)}
+            className="btn btn-primary mt-4 w-full font-bold sm:w-auto"
+          >
+            <QrCode className="size-4" />
+            Show my QR to the crew
+          </button>
           {demo && (
             <div className="proto mt-4 p-3.5">
               <PrototypeNote>
@@ -117,6 +136,29 @@ export function CheckInPanel({ id, bare = false }: { id: CheckInId; bare?: boole
         {celebrate && <ArrivalDialog id={id} onClose={closeCelebrate} />}
       </AnimatePresence>
     </div>
+  );
+}
+
+/**
+ * A one-line check-in for a row in a list (the team-building stages): the
+ * name's status on the right, and for a self check-in, the button itself.
+ */
+export function CompactCheckIn({ id }: { id: CheckInId }) {
+  const state = useParticipant();
+  const at = state.checkIns[id];
+  const locked = isLocked(id, state.checkIns);
+  if (at) return <Badge tone="done">Checked in</Badge>;
+  if (BY_ID[id].mode === "crew") return <Badge tone="pending">Crew scan</Badge>;
+  return (
+    <button
+      type="button"
+      disabled={locked}
+      onClick={() => actions.checkIn(id)}
+      className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border-[1.5px] border-silver/60 px-3.5 text-[0.8125rem] font-semibold text-white transition-colors hover:border-silver hover:bg-white/[0.06] disabled:opacity-45"
+    >
+      {locked ? <Lock className="size-3.5" /> : <Check className="size-3.5" strokeWidth={2.5} />}
+      Check in
+    </button>
   );
 }
 
@@ -159,18 +201,14 @@ function ArrivalDialog({ id, onClose }: { id: CheckInId; onClose: () => void }) 
         />
         <SuccessMark reduce={reduce} fresh />
         <motion.p {...rise(0.35)} className="eyebrow relative mt-6">
-          {COPY[id].name} · Check-in
+          {BY_ID[id].name} · Check-in
         </motion.p>
         <motion.h2 {...rise(0.42)} id="arrival-title" className="t-h2 relative mt-2 text-white">
-          {welcome ? (
-            <>
-              Your Piece <span className="text-together">Has Arrived.</span>
-            </>
-          ) : (
-            <>
-              Welcome to the <span className="text-together">Sunset.</span>
-            </>
-          )}
+          {welcome
+            ? "Your Piece Has Arrived."
+            : id === "sunset-welcome"
+              ? "Welcome to the Sunset."
+              : "You're Checked In."}
         </motion.h2>
         <motion.p
           {...rise(0.5)}
@@ -178,7 +216,9 @@ function ArrivalDialog({ id, onClose }: { id: CheckInId; onClose: () => void }) 
         >
           {welcome
             ? "Dari undangan digital, menjadi rasa memiliki yang nyata."
-            : "Satu senja, banyak cerita. Nikmati musiknya, hidangannya, dan orang-orang di sekitarmu."}
+            : id === "sunset-welcome"
+              ? "Satu senja, banyak cerita. Nikmati musiknya, hidangannya, dan orang-orang di sekitarmu."
+              : `${BY_ID[id].name} sudah tercatat di My Canvas Pass-mu.`}
         </motion.p>
 
         {welcome && (

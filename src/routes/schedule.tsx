@@ -4,9 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { MapPin } from "lucide-react";
 import { KvTexture, PageField } from "@/components/site/PageField";
 import { PageHero } from "@/components/site/PageHero";
-import { KV_BOTTOM_RIGHT, Mosaic } from "@/components/canvas/Canvas";
-import { RuledEyebrow } from "@/components/site/RuledEyebrow";
-import { DAY1, DAYS, EVENT } from "@/lib/event";
+import { DAYS, EVENT, RUNDOWN, type DayId } from "@/lib/event";
 
 export const Route = createFileRoute("/schedule")({
   head: () => ({
@@ -15,19 +13,16 @@ export const Route = createFileRoute("/schedule")({
       {
         name: "description",
         content:
-          "The Day 1 flow of Dulux Employee Gathering 2027: from the Welcome Experience to the Sunset Social.",
+          "The three-day rundown of Dulux Employee Gathering 2027: Day 1 arrival and Sunset Social, Day 2 team building and Kick-off Night, Day 3 direction recap and functional huddles.",
       },
     ],
   }),
   component: SchedulePage,
 });
 
-type DayId = (typeof DAYS)[number]["id"];
-
 function SchedulePage() {
   const [active, setActive] = useState<DayId>("day1");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const index = DAYS.findIndex((d) => d.id === active);
 
   function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>, i: number) {
     const last = DAYS.length - 1;
@@ -62,8 +57,8 @@ function SchedulePage() {
       />
 
       <PageField>
-        <KvTexture side="right" className="top-0" />
-        <KvTexture side="left" className="bottom-16" />
+        <KvTexture side="right" className="top-[-3rem]" />
+        <KvTexture side="left" className="top-[38%]" />
         <section className="relative px-5 pb-20 sm:pb-28">
           <div className="relative mx-auto max-w-6xl">
             <div
@@ -121,11 +116,7 @@ function SchedulePage() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="mt-10 focus-visible:outline-none sm:mt-12"
               >
-                {active === "day1" ? (
-                  <Day1 />
-                ) : (
-                  <ComingSoon label={DAYS[index]!.label} date={DAYS[index]!.date} />
-                )}
+                <Rundown day={active} />
               </motion.div>
             </AnimatePresence>
           </div>
@@ -137,34 +128,31 @@ function SchedulePage() {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const SESSIONS = DAY1.filter((d) => d.hasActivity);
-
 /**
- * Day 1 as a plain rundown: the day's header (date, name, session count, one
+ * One day as a plain rundown: the day's header (date, name, session count, one
  * line), then one row per session with the time on the left, a dot on the
  * line, the name, one instruction if there is one, and where it happens.
- * Until clock times are confirmed (`time` in event.ts), the time column shows
- * the part of the day from the deck.
+ * Until a clock time is confirmed (`time` in event.ts), the time column says
+ * TBC.
  */
-function Day1() {
+function Rundown({ day }: { day: DayId }) {
+  const { date, title, intro, sessions, footnote } = RUNDOWN[day];
   return (
     <div className="mx-auto max-w-2xl">
-      <p className="text-[0.75rem] font-semibold uppercase tracking-[0.22em] text-sky">
-        Wed, 16 Dec 2026
+      <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
+        {date}
       </p>
       <div className="mt-2 flex items-end justify-between gap-4 border-b border-white/12 pb-5">
         <h2 className="text-[clamp(1.75rem,6.4vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] text-white">
-          Find Your Place
+          {title}
         </h2>
-        <p className="shrink-0 pb-1 text-sm text-white/55">{SESSIONS.length} sessions</p>
+        <p className="shrink-0 pb-1 text-sm text-white/55">{sessions.length} sessions</p>
       </div>
-      <p className="mt-5 text-[1rem] leading-relaxed text-white/70">
-        Check-in di hotel, waktu bebas di siang hari, lalu acara bersama di malam hari.
-      </p>
+      <p className="mt-5 text-[1rem] leading-relaxed text-white/70">{intro}</p>
 
       <ol className="relative mt-8">
-        {SESSIONS.map((item, i) => {
-          const last = i === SESSIONS.length - 1;
+        {sessions.map((item, i) => {
+          const last = i === sessions.length - 1;
           return (
             <motion.li
               key={item.id}
@@ -208,7 +196,7 @@ function Day1() {
       </ol>
 
       <p className="mt-10 border-t border-white/12 pt-5 text-[0.875rem] leading-relaxed text-white/55">
-        Jam setiap sesi akan diinformasikan setelah dikonfirmasi tim acara.
+        {footnote}
       </p>
     </div>
   );
@@ -220,28 +208,5 @@ function Chip({ icon: Icon, children }: { icon: typeof MapPin; children: ReactNo
       <Icon className="size-3.5 shrink-0 text-cyan" />
       {children}
     </span>
-  );
-}
-
-function ComingSoon({ label, date }: { label: string; date: string }) {
-  return (
-    <div className="relative mx-auto max-w-2xl overflow-hidden rounded-[1.75rem] bg-[linear-gradient(180deg,#0628a8_0%,#041f8c_55%,#03186f_100%)] px-6 py-14 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_30px_60px_-34px_rgba(0,8,60,0.9)] ring-1 ring-white/12 sm:px-12 sm:py-16">
-      <Mosaic
-        tiles={KV_BOTTOM_RIGHT}
-        cols={4}
-        rows={4}
-        className="pointer-events-none absolute -right-6 -top-6 w-36 opacity-90 sm:w-44"
-      />
-      <div className="relative">
-        <RuledEyebrow>{date}</RuledEyebrow>
-        <h2 className="wordmark mt-5 text-[clamp(1.75rem,7vw,2.75rem)] text-white">
-          <span className="block">{label} rundown</span>
-          <span className="block pr-[0.06em] text-together">coming soon</span>
-        </h2>
-        <p className="mx-auto mt-4 max-w-md text-[0.9375rem] leading-relaxed text-white/70">
-          Rundown {label} akan ditampilkan di sini setelah final.
-        </p>
-      </div>
-    </div>
   );
 }

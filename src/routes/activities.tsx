@@ -4,8 +4,12 @@ import { useCallback, useEffect, useRef } from "react";
 import { z } from "zod";
 import {
   BedDouble,
+  Blocks,
   Bus,
-  CalendarDays,
+  Camera,
+  Gift,
+  Puzzle,
+  Target,
   Coffee,
   Fan,
   IdCard,
@@ -34,14 +38,35 @@ import { CheckInPanel } from "@/components/activities/CheckIn";
 import { ConversationCardButton } from "@/components/activities/ConversationCard";
 import { OneWordPulse } from "@/components/activities/OneWordPulse";
 import { Badge } from "@/components/activities/Badges";
-import { FactPill, SectionIntro } from "@/components/activities/SectionIntro";
+import { SectionIntro } from "@/components/activities/SectionIntro";
+import {
+  BlockHead,
+  CheckInCard,
+  DayHead,
+  Fact,
+  MEDIA_CARD,
+  MediaSide,
+  MoodTag,
+  NumberedCard,
+  PartChips,
+  TEXT_LINK,
+  type PartChip,
+} from "@/components/activities/ActivityKit";
+import { DayTwo } from "@/components/activities/DayTwo";
+import { ACTIVITY_PHOTO } from "@/lib/quota";
+import { DayThree } from "@/components/activities/DayThree";
 import { StatusDot } from "@/components/passport/Checklist";
 import {
   CHANGE_TALK_GUESTS,
   CHANGE_TALK_PARTS,
+  CLUE_PACK,
   EVENT,
+  RUNDOWN,
   SPECIAL_WISHLIST,
+  SUNSET_GAMES,
   SUNSET_LINEUP,
+  SUNSET_PHOTOBOOTH,
+  TEAM_REVEAL,
   WELCOME_KIT,
 } from "@/lib/event";
 import { PARTICIPANT, progressOf, useParticipant, type CheckInId } from "@/lib/participant";
@@ -60,8 +85,7 @@ import grindBoys from "@/assets/lineup/grind-boys.webp";
 
 /**
  * One tab per phase, so it's always clear when something happens: before the
- * event, then each day. Day 1 lists its moments in rundown order; Day 2 and
- * Day 3 aren't finalised yet.
+ * event, then each day, each listing its moments in rundown order.
  */
 const SECTIONS = ["before", "day1", "day2", "day3"] as const;
 type Section = (typeof SECTIONS)[number];
@@ -97,7 +121,7 @@ export const Route = createFileRoute("/activities")({
       {
         name: "description",
         content:
-          "The First Stroke dan Change Talk Question Box sebelum acara, lalu semua aktivitas Day 1 Greater Together 2027.",
+          "The First Stroke dan Change Talk Question Box sebelum acara, lalu semua aktivitas Day 1 sampai Day 3 Greater Together 2027.",
       },
     ],
   }),
@@ -112,31 +136,30 @@ const TABS: { id: Section; label: string; sub: string }[] = [
 ];
 
 /** Day 1's parts (Infinity's chips): what's in each, and when. */
-const PART_CHIPS: { id: Part; label: string; sub: string; icon: LucideIcon; moments: string[] }[] =
-  [
-    {
-      id: "arrival",
-      label: "Arrival",
-      sub: "Welcome · Journey to Sunset",
-      icon: Sparkles,
-      moments: ["welcome", "journey-to-sunset"],
-    },
-    {
-      id: "sunset",
-      label: "Sunset",
-      sub: "Sunset Welcome · Open Table",
-      icon: Sunset,
-      moments: ["sunset-welcome", "open-table"],
-    },
-    {
-      id: "evening",
-      label: "Evening",
-      sub: "The Change Talk",
-      icon: Mic,
-      moments: ["change-talk"],
-    },
-    { id: "night", label: "Night", sub: "Sunset Social", icon: Music, moments: ["sunset-social"] },
-  ];
+const PART_CHIPS: PartChip<Part>[] = [
+  {
+    id: "arrival",
+    label: "Arrival",
+    sub: "Welcome · Totem · Journey",
+    icon: Sparkles,
+    moments: ["welcome", "missing-piece-totem", "journey-to-sunset"],
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    sub: "Sunset Welcome · Open Table",
+    icon: Sunset,
+    moments: ["sunset-welcome", "open-table"],
+  },
+  {
+    id: "evening",
+    label: "Evening",
+    sub: "The Change Talk",
+    icon: Mic,
+    moments: ["change-talk"],
+  },
+  { id: "night", label: "Night", sub: "Sunset Social", icon: Music, moments: ["sunset-social"] },
+];
 
 const PHOTOS: Record<string, string> = {
   "praz-teguh": prazTeguh,
@@ -215,7 +238,7 @@ function ActivitiesPage() {
         eyebrow="Activities"
         title="Everyone has"
         accent="something to bring"
-        intro="Dari The First Stroke sebelum acara sampai Sunset Social di malam Day 1, semuanya ada di sini."
+        intro="Dari The First Stroke sebelum acara sampai Functional Huddle di Day 3, semuanya ada di sini."
         introAction={
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -226,7 +249,7 @@ function ActivitiesPage() {
             <button
               type="button"
               onClick={openQr}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[linear-gradient(100deg,#ffffff_0%,#eef2ff_50%,#cbd8ff_100%)] px-5 text-sm font-bold text-navy-900 shadow-[0_12px_40px_-14px_rgba(110,165,255,0.9)] active:scale-95"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[linear-gradient(100deg,#ffffff_0%,#eef1f4_50%,#cfd6dd_100%)] px-5 text-sm font-bold text-navy-900 shadow-[0_12px_40px_-14px_rgba(80,190,255,0.9)] active:scale-95"
             >
               <QrCode className="size-4" />
               Show Your QR to Check In
@@ -236,8 +259,8 @@ function ActivitiesPage() {
       />
 
       <PageField>
-        <KvTexture side="right" className="top-0" />
-        <KvTexture side="left" className="bottom-16" />
+        <KvTexture side="right" className="top-[-3rem]" />
+        <KvTexture side="left" className="top-[38%]" />
         <section className="relative px-5 pb-20 sm:pb-28">
           <div ref={contentRef} className="relative mx-auto max-w-6xl scroll-mt-24">
             {/* One tab per phase: before the event, then each day. */}
@@ -306,8 +329,10 @@ function ActivitiesPage() {
                         contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                   />
+                ) : section === "day2" ? (
+                  <DayTwo />
                 ) : (
-                  <DayComingSoon day={section === "day2" ? "Day 2" : "Day 3"} />
+                  <DayThree />
                 )}
               </motion.div>
             </AnimatePresence>
@@ -414,57 +439,8 @@ function BeforeEvent() {
 function DayOne({ part, onPart }: { part: Part; onPart: (p: Part) => void }) {
   return (
     <div>
-      <Reveal className="text-center">
-        <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.24em] text-sky">
-          Day 1 · Wed, 16 Dec 2026
-        </p>
-        <p className="wordmark mt-2 pr-[0.06em] text-[clamp(1.5rem,5.6vw,2.25rem)] text-white">
-          Find Your <span className="text-together">Place</span>
-        </p>
-      </Reveal>
-
-      {/* The day's parts, one at a time. A swipeable row on a phone. */}
-      <div
-        role="tablist"
-        aria-label="Day 1"
-        className="no-scrollbar -mx-5 mt-6 flex gap-2.5 overflow-x-auto px-5 pb-1 lg:mx-0 lg:justify-center lg:overflow-visible lg:px-0"
-      >
-        {PART_CHIPS.map((chip, i) => {
-          const active = chip.id === part;
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onPart(chip.id)}
-              className={`relative flex shrink-0 items-center gap-3 rounded-2xl border py-2 pl-2 pr-4 text-left transition-colors duration-200 active:scale-[0.98] ${
-                active
-                  ? "border-cyan/60 bg-white/[0.1] text-white"
-                  : "border-white/12 bg-white/[0.04] text-white/80 hover:border-cyan/40"
-              }`}
-            >
-              <span
-                className={`grid size-9 shrink-0 place-items-center rounded-xl ${
-                  active
-                    ? "bg-[image:var(--gradient-together)] text-navy-950"
-                    : "bg-white/[0.08] text-cyan"
-                }`}
-              >
-                <chip.icon className="size-4" />
-              </span>
-              <span>
-                <span className="block whitespace-nowrap text-sm font-semibold">
-                  <span className="text-white/45">0{i + 1}</span> {chip.label}
-                </span>
-                <span className="block whitespace-nowrap text-[0.6875rem] text-white/55">
-                  {chip.sub}
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      <DayHead date={`Day 1 · ${RUNDOWN.day1.date}`} title={RUNDOWN.day1.title} />
+      <PartChips label="Day 1" parts={PART_CHIPS} active={part} onChange={onPart} />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -491,25 +467,6 @@ function DayOne({ part, onPart }: { part: Part; onPart: (p: Part) => void }) {
   );
 }
 
-function DayComingSoon({ day }: { day: string }) {
-  return (
-    <div className="surface mx-auto flex max-w-xl items-center gap-4 px-5 py-6">
-      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-sky">
-        <CalendarDays className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex flex-wrap items-center gap-2">
-          <span className="text-base font-semibold text-white">Aktivitas {day}</span>
-          <Badge tone="soon">Coming soon</Badge>
-        </span>
-        <span className="mt-1 block text-sm text-white/60">
-          Aktivitasnya akan muncul di sini setelah rundown {day} final.
-        </span>
-      </span>
-    </div>
-  );
-}
-
 /* ── Day 1 · Arrival ──────────────────────────────────────────────── */
 
 const KIT_ICON: Record<(typeof WELCOME_KIT)[number]["id"], LucideIcon> = {
@@ -527,12 +484,7 @@ function WelcomeSection() {
         title="The Welcome"
         accent="Experience"
         text="Tunjukkan QR My Canvas Pass di meja registrasi. Setelah dipindai, kamu menerima info kamar, identitas tim, dan welcome kit."
-      >
-        <div className="mt-5 flex flex-wrap gap-2">
-          <FactPill icon={MapPin}>Lobi Swissôtel</FactPill>
-          <FactPill icon={QrCode}>Check-in</FactPill>
-        </div>
-      </SectionIntro>
+      />
 
       <CheckInCard
         id="welcome"
@@ -556,7 +508,7 @@ function WelcomeSection() {
             return (
               <Reveal key={k.id} delay={i * 0.05}>
                 <figure className="surface flex h-full flex-col overflow-hidden">
-                  <div className="grid aspect-square place-items-center bg-[linear-gradient(160deg,#1f6bff_0%,#0a35c8_55%,#06238f_100%)]">
+                  <div className="grid aspect-square place-items-center bg-[linear-gradient(160deg,#1d6aa8_0%,#0d4a80_55%,#0b3c6b_100%)]">
                     <Icon className="size-10 text-ice" strokeWidth={1.5} />
                   </div>
                   <figcaption className="flex-1 px-4 py-3.5">
@@ -585,6 +537,37 @@ function WelcomeSection() {
         </Reveal>
       </div>
 
+      {/* The Missing Piece Totem and the clue pack (deck p.38–39). */}
+      <div className="mt-16 sm:mt-20">
+        <SectionIntro
+          id="missing-piece-totem"
+          eyebrow="Day 1 · Arrival"
+          title="The Missing Piece"
+          accent="Totem"
+          text="Find your piece. Find your people. Kamu mungkin datang bersama circle-mu sendiri, tapi cerita berikutnya dimulai dengan orang yang belum kamu kenal."
+        />
+        <Reveal delay={0.06}>
+          <div className={MEDIA_CARD}>
+            <MediaSide
+              image={ACTIVITY_PHOTO["missing-piece-totem"]}
+              alt="Colleagues with their puzzle pieces around a geometric totem in the lobby"
+              mood
+              className="md:min-h-[15rem]"
+            />
+            <div className="flex flex-col justify-center p-6 sm:p-8">
+              <span className="grid size-10 place-items-center rounded-full bg-white/[0.08] text-cyan">
+                <Puzzle className="size-[1.05rem]" />
+              </span>
+              <h3 className="mt-4 text-lg font-semibold text-white">The Mystery Begins Here</h3>
+              <p className="mt-1.5 text-[0.9375rem] text-white/65">{CLUE_PACK.text}</p>
+              <div className="mt-5 border-t border-white/[0.08] pt-4">
+                <CheckInPanel id="missing-piece-totem" bare />
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+
       {/* Journey to Sunset: personal time, then the bus. */}
       <div className="mt-16 sm:mt-20">
         <SectionIntro
@@ -593,12 +576,7 @@ function WelcomeSection() {
           title="Journey to"
           accent="Sunset"
           text="Tidak ada kegiatan wajib. Istirahat di kamar, lalu berangkat ke venue malam dengan bus sesuai jadwal tim."
-        >
-          <div className="mt-5 flex flex-wrap gap-2">
-            <FactPill icon={Coffee}>Personal time</FactPill>
-            <FactPill icon={Bus}>Bus per tim</FactPill>
-          </div>
-        </SectionIntro>
+        />
         <Reveal delay={0.06}>
           <div className={MEDIA_CARD}>
             <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[15rem]">
@@ -640,13 +618,7 @@ function SunsetSection() {
         title="Sunset"
         accent="Welcome"
         text="Kamu disambut musik akustik, hidangan ringan saat senja, dan suasana yang membuat obrolan mengalir dengan sendirinya."
-      >
-        <div className="mt-5 flex flex-wrap gap-2">
-          <FactPill icon={Music}>Acoustic music</FactPill>
-          <FactPill icon={Sunset}>Sunset refreshments</FactPill>
-          <FactPill icon={QrCode}>Check-in</FactPill>
-        </div>
-      </SectionIntro>
+      />
 
       <CheckInCard
         id="sunset-welcome"
@@ -657,6 +629,24 @@ function SunsetSection() {
         mood
       />
 
+      {/* The first connection of the team-building groups (deck p.49). */}
+      <div className="mt-12">
+        <BlockHead
+          title="Find Your Pieces. Find Your People."
+          note={`${TEAM_REVEAL.teams} tim, bertemu untuk pertama kali.`}
+        />
+        <ol className="grid gap-3 md:grid-cols-3">
+          {TEAM_REVEAL.steps.map((step, i) => (
+            <Reveal as="li" key={step.title} delay={i * 0.05} className="h-full">
+              <NumberedCard n={i + 1} title={step.title} text={step.text} />
+            </Reveal>
+          ))}
+        </ol>
+        <ul className="mt-3">
+          <Fact icon={Camera} title={SUNSET_PHOTOBOOTH.title} text={SUNSET_PHOTOBOOTH.text} />
+        </ul>
+      </div>
+
       <div className="mt-16 sm:mt-20">
         <SectionIntro
           id="open-table"
@@ -664,12 +654,7 @@ function SunsetSection() {
           title="The Open"
           accent="Table"
           text="Makan malam bersama. Para pimpinan duduk di meja yang berbeda, bersama rekan dari berbagai divisi."
-        >
-          <div className="mt-5 flex flex-wrap gap-2">
-            <FactPill icon={UtensilsCrossed}>Sunset dinner</FactPill>
-            <FactPill icon={MessagesSquare}>Conversation card</FactPill>
-          </div>
-        </SectionIntro>
+        />
         <Reveal delay={0.06}>
           <div className={MEDIA_CARD}>
             <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[15rem]">
@@ -693,6 +678,9 @@ function SunsetSection() {
               <div className="mt-5">
                 <ConversationCardButton />
               </div>
+              <div className="mt-5 border-t border-white/[0.08] pt-4">
+                <CheckInPanel id="open-table" bare />
+              </div>
             </div>
           </div>
         </Reveal>
@@ -713,12 +701,11 @@ function ChangeTalkSection() {
         title="The Change"
         accent="Talk"
         text="Pimpinan menjelaskan arah Dulux menuju 2027, lalu moderator membawakan pertanyaan peserta, termasuk dari Question Box."
-      >
-        <div className="mt-5 flex flex-wrap gap-2">
-          <FactPill icon={Mic}>Leadership sharing</FactPill>
-          <FactPill icon={MessageCircleQuestion}>Moderated Q&A</FactPill>
-        </div>
-      </SectionIntro>
+      />
+
+      <Reveal delay={0.06} className="mt-8 block">
+        <CheckInPanel id="change-talk" />
+      </Reveal>
 
       <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {CHANGE_TALK_PARTS.map((part, i) => (
@@ -792,12 +779,11 @@ function SocialSection() {
         title="Sunset"
         accent="Social"
         text="Malam ditutup lebih santai dengan musik akustik live, DJ, dan networking."
-      >
-        <div className="mt-5 flex flex-wrap gap-2">
-          <FactPill icon={Music}>Live music & DJ</FactPill>
-          <FactPill icon={Moon}>Day 2 teaser</FactPill>
-        </div>
-      </SectionIntro>
+      />
+
+      <Reveal delay={0.06} className="mt-8 block">
+        <CheckInPanel id="sunset-social" />
+      </Reveal>
 
       <div className="mt-8">
         <Reveal>
@@ -821,80 +807,31 @@ function SocialSection() {
         </div>
       </div>
 
+      {/* Sunset Social games (deck p.47). */}
+      <div className="mt-12">
+        <BlockHead title="Play Together. Win Together." note="Setiap partisipasi dapat hadiah." />
+        <ul className="grid gap-3 md:grid-cols-2">
+          {SUNSET_GAMES.games.map((g) => (
+            <Fact
+              key={g.name}
+              icon={g.name === "Build It Together" ? Blocks : Target}
+              title={g.name}
+              text={g.text}
+            />
+          ))}
+        </ul>
+        <Reveal delay={0.06}>
+          <p className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-white/65">
+            <Gift className="mt-0.5 size-4 shrink-0 text-cyan" />
+            Hadiah untuk setiap partisipasi: {SUNSET_GAMES.rewards.join(", ")}.
+          </p>
+        </Reveal>
+      </div>
+
       <div className="mt-12">
         <OneWordPulse />
       </div>
     </div>
-  );
-}
-
-/* ── Shared pieces ────────────────────────────────────────────────── */
-
-const TEXT_LINK =
-  "inline-flex min-h-9 items-center text-sm font-semibold text-white underline decoration-cyan/50 decoration-1 underline-offset-[6px] transition-colors hover:decoration-cyan";
-
-/** Picture on one side, words on the other (Infinity's check-in card). */
-const MEDIA_CARD =
-  "mt-8 grid overflow-hidden rounded-[var(--radius-card)] bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025))] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_50px_-32px_rgba(0,8,60,0.9)] ring-1 ring-white/12 md:grid-cols-[1fr_1.1fr]";
-
-function CheckInCard({
-  id,
-  image,
-  alt,
-  title,
-  text,
-  mood = false,
-}: {
-  id: CheckInId;
-  image: string;
-  alt: string;
-  title: string;
-  text: string;
-  mood?: boolean;
-}) {
-  return (
-    <Reveal delay={0.06}>
-      <div className={MEDIA_CARD}>
-        <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[16rem]">
-          <div className="absolute inset-0">
-            <MotionImage src={image} alt={alt} className="h-full" />
-          </div>
-          {mood && <MoodTag />}
-        </div>
-        <div className="flex flex-col justify-center p-6 sm:p-8">
-          <span className="grid size-10 place-items-center rounded-full bg-white/[0.08] text-cyan">
-            <QrCode className="size-[1.05rem]" />
-          </span>
-          <h3 className="mt-4 text-lg font-semibold text-white">{title}</h3>
-          <p className="mt-1.5 text-[0.9375rem] text-white/65">{text}</p>
-          <div className="mt-5 border-t border-white/[0.08] pt-4">
-            <CheckInPanel id={id} bare />
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
-function MoodTag() {
-  return (
-    <span className="absolute left-3 top-3 rounded-full bg-navy-950/60 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur-sm">
-      Referensi suasana
-    </span>
-  );
-}
-
-function Fact({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
-  return (
-    <li className="surface flex items-start gap-3 p-4">
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.08] text-cyan">
-        <Icon className="size-4" />
-      </span>
-      <span>
-        <span className="block text-[0.9375rem] font-semibold text-white">{title}</span>
-        <span className="block text-sm text-white/60">{text}</span>
-      </span>
-    </li>
   );
 }
 

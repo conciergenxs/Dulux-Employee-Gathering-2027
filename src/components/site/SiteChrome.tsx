@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
+import { useEffect, useState, type CSSProperties } from "react";
 import {
   ArrowUp,
   CalendarDays,
@@ -15,8 +15,8 @@ import { EVENT } from "@/lib/event";
 import { useDemoMode } from "@/lib/demo";
 import { PARTICIPANT, actions, initials, progressOf, useParticipant } from "@/lib/participant";
 import logoColor from "@/assets/brand/dulux-logo-color.webp";
-import heroWave from "@/assets/pattern/hero-wave.webp";
-import heroWave2x from "@/assets/pattern/hero-wave@1.5x.webp";
+import logoWhite from "@/assets/brand/dulux-logo-white.webp";
+import { RootedPalm, TileWall } from "@/components/kv/KickOffKv";
 
 type NavTo = "/" | "/schedule" | "/activities" | "/guide";
 const NAV: { to: NavTo; label: string; icon: typeof House }[] = [
@@ -27,18 +27,6 @@ const NAV: { to: NavTo; label: string; icon: typeof House }[] = [
 ];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-
-export function ScrollProgress() {
-  const { scrollYProgress } = useScroll();
-  const x = useSpring(scrollYProgress, { stiffness: 140, damping: 24, restDelta: 0.001 });
-  return (
-    <motion.div
-      aria-hidden
-      style={{ scaleX: x }}
-      className="fixed left-0 top-0 z-[60] h-0.5 w-full origin-left bg-[image:var(--gradient-together)]"
-    />
-  );
-}
 
 export function SiteChrome() {
   const [open, setOpen] = useState(false);
@@ -86,10 +74,6 @@ function SiteHeader({
   setOpen: (v: boolean | ((p: boolean) => boolean)) => void;
   pathname: string;
 }) {
-  const { scrollY } = useScroll();
-  const [atTop, setAtTop] = useState(true);
-  useMotionValueEvent(scrollY, "change", (v) => setAtTop(v < 24));
-
   useEffect(() => {
     setOpen(false);
   }, [pathname, setOpen]);
@@ -105,22 +89,17 @@ function SiteHeader({
     };
   }, [open, setOpen]);
 
-  // A floating bar, inset from the screen edges. Over the top of a page it is
-  // barely there — a whisper of glass and a hairline — so the KV reads
-  // through it; once content scrolls underneath it settles into a deeper,
-  // still-translucent navy so text never fights what passes behind.
-  const settled = !atTop || open;
+  // A floating bar, inset from the screen edges, cut like the KV's window:
+  // small radius top-left and bottom-right, large on the other two. Flat
+  // glass, the same at every scroll position: #091C31 at 30% over the
+  // design's background blur of 50 (Figma's blur value is twice CSS's, so
+  // 25px here), a 1.5px white stroke, and no shadow. The stroke is drawn as
+  // an inset ring: browsers round a 1.5px border down to 1px.
 
   return (
     // Sticky: always in reach, floating over whatever scrolls beneath it.
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-      <div
-        className={`pointer-events-auto mx-auto flex h-[3.75rem] w-full max-w-6xl items-center justify-between rounded-[1.25rem] border pl-4 pr-1.5 transition-[background-color,border-color,box-shadow] duration-500 sm:h-16 sm:pl-5 sm:pr-2 ${
-          settled
-            ? "border-white/[0.09] bg-navy-950/75 shadow-[0_12px_40px_-20px_rgba(0,6,40,0.9),inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-2xl backdrop-saturate-150"
-            : "border-white/[0.1] bg-navy-950/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl backdrop-saturate-150"
-        }`}
-      >
+      <div className="pointer-events-auto mx-auto flex h-[3.75rem] w-full max-w-6xl items-center justify-between rounded-[0.5rem_1.5rem_0.5rem_1.5rem] bg-[#091C31]/30 pl-4 pr-1.5 ring-[1.5px] ring-inset ring-white backdrop-blur-[25px] sm:h-16 sm:rounded-[0.625rem_1.75rem_0.625rem_1.75rem] sm:pl-5 sm:pr-2">
         <Link
           to="/"
           className="flex items-center"
@@ -181,26 +160,31 @@ function NavMenu({
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-40 overflow-y-auto overflow-x-hidden overscroll-contain bg-navy-900"
         >
-          {/* The menu opens onto the KV: the lit royal field above, the wave
-              and its tiles along the foot. */}
-          <div className="relative isolate min-h-dvh">
+          {/* The menu opens onto the KV: the window's navy glowing down to
+              cyan, a palm at each side, and the tile wall along the foot. */}
+          <div
+            className="relative isolate min-h-dvh"
+            style={{ "--kv-cell": "clamp(4.5rem, 8vw, 7rem)" } as CSSProperties}
+          >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(70%_55%_at_30%_0%,rgba(26,82,230,0.85)_0%,rgba(26,82,230,0)_72%),radial-gradient(45%_40%_at_100%_35%,rgba(31,123,255,0.25)_0%,rgba(31,123,255,0)_70%),linear-gradient(180deg,#0629a8_0%,#041f8c_40%,#021668_75%,#01145f_100%)]"
+              className="pointer-events-none absolute inset-0 -z-30 bg-[radial-gradient(60%_40%_at_30%_30%,rgba(56,160,255,0.28)_0%,rgba(56,160,255,0)_72%),linear-gradient(180deg,#081a2f_0%,#0a2340_25%,#0b3354_50%,#0e5f8f_78%,#1290c3_100%)]"
             />
-            <motion.img
-              src={heroWave}
-              srcSet={`${heroWave} 2898w, ${heroWave2x} 4348w`}
-              sizes="(min-width: 1024px) 100vw, 900px"
-              alt=""
+            <div
               aria-hidden
-              width={2898}
-              height={724}
+              className="pointer-events-none absolute inset-0 -z-20 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_0%,#000_45%,rgba(0,0,0,0.4)_100%)]"
+            >
+              <RootedPalm className="right-[-9rem] top-[12%] w-[22rem] -scale-x-100 opacity-45 blur-[0.8px] lg:right-[-3rem] lg:w-[30rem]" />
+            </div>
+            <motion.div
+              aria-hidden
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-              className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[clamp(7rem,17svh,10rem)] w-full select-none object-cover object-[100%_100%] lg:h-auto lg:max-h-[34svh]"
-            />
+              className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[clamp(7rem,17svh,10rem)] border-t-[3px] border-silver shadow-[0_-12px_30px_-10px_rgba(0,10,30,0.6)] lg:h-[min(20svh,10rem)]"
+            >
+              <TileWall className="absolute inset-0" />
+            </motion.div>
 
             <div className="mx-auto grid max-w-6xl gap-8 px-6 pb-[clamp(8.5rem,19svh,11rem)] pt-[6.5rem] sm:px-8 sm:pt-32 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-16 lg:pb-[min(34svh,25vw)] lg:pt-36 laptop-short:pt-28">
               <nav aria-label="Main">
@@ -292,11 +276,11 @@ function MenuPass({ onClose, active }: { onClose: () => void; active: boolean })
 
   return (
     <div
-      className={`rounded-[1.75rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_60px_-30px_rgba(0,8,60,0.9)] backdrop-blur-md sm:p-6 ${
-        active ? "border-ice/50" : "border-white/12"
+      className={`rounded-[0.75rem_2.25rem_0.75rem_2.25rem] border-2 bg-[linear-gradient(180deg,rgba(7,26,51,0.72),rgba(7,26,51,0.5))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_60px_-30px_rgba(0,10,30,0.9)] backdrop-blur-md sm:p-6 ${
+        active ? "border-silver" : "border-silver/60"
       }`}
     >
-      <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-sky">
+      <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
         My Canvas Pass
       </p>
       <div className="mt-3.5 flex items-center gap-3.5">
@@ -330,7 +314,7 @@ function MenuPass({ onClose, active }: { onClose: () => void; active: boolean })
         to="/passport"
         onClick={onClose}
         aria-current={active ? "page" : undefined}
-        className="mt-5 flex min-h-[3.25rem] w-full items-center justify-center gap-2.5 rounded-full bg-[linear-gradient(100deg,#ffffff_0%,#eef2ff_50%,#cbd8ff_100%)] px-6 text-[0.9375rem] font-bold text-navy-900 shadow-[0_0_0_1px_rgba(255,255,255,0.6),0_12px_40px_-14px_rgba(110,165,255,0.9)] transition-transform duration-300 active:scale-[0.98]"
+        className="mt-5 flex min-h-[3.25rem] w-full items-center justify-center gap-2.5 rounded-full bg-[linear-gradient(180deg,#ffffff_0%,#eef1f4_55%,#cfd6dd_100%)] px-6 text-[0.9375rem] font-bold text-navy-900 shadow-[0_0_0_1px_rgba(255,255,255,0.7),inset_0_-2px_0_rgba(110,125,140,0.35),0_10px_28px_-12px_rgba(80,190,255,0.85)] transition-transform duration-300 active:scale-[0.98]"
       >
         <QrCode className="size-5 shrink-0" strokeWidth={1.9} />
         Open My Canvas Pass
@@ -366,20 +350,25 @@ export function SiteFooter() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <footer
-      className={`relative overflow-hidden bg-[linear-gradient(180deg,var(--navy-900)_0%,var(--navy-950)_70%)] px-5 pb-10 pt-14 sm:pt-16 ${
+      className={`relative overflow-hidden border-t border-silver/20 bg-[linear-gradient(180deg,#0a3560_0%,#082b4f_80%)] px-5 pb-10 pt-14 sm:pt-16 ${
         pathname.startsWith("/passport") ? "pb-28" : ""
       }`}
     >
       <div className="relative mx-auto max-w-6xl">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
           <Link to="/" className="flex items-center gap-3.5" aria-label="Greater Together home">
-            <img src={logoColor} alt="Dulux" className="h-10 w-auto" />
-            <span className="h-8 w-px bg-white/20" aria-hidden />
-            <span>
-              <span className="block text-[0.625rem] font-semibold uppercase tracking-[0.22em] text-sky">
-                Employee Gathering 2027
-              </span>
-              <span className="wordmark mt-0.5 block text-lg text-white">Greater Together</span>
+            <img src={logoWhite} alt="Dulux" width={300} height={144} className="h-10 w-auto" />
+            <span className="font-[family-name:var(--font-kv-condensed)] text-[1rem] uppercase leading-[1.05] text-white">
+              {EVENT.kvLockup.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </span>
+            <span className="h-9 w-px bg-white/20" aria-hidden />
+            <span className="kv-heading kv-silver text-[1rem] leading-[1.05]">
+              <span className="block">Greater</span>
+              <span className="block">Together</span>
             </span>
           </Link>
           <nav aria-label="Footer">

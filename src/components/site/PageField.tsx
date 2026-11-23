@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import heroPatternTop from "@/assets/pattern/hero-top.webp";
+import { RootedPalm } from "@/components/kv/KickOffKv";
 
 /**
- * The page field shared by the inner pages: lit royal blue rather than flat
- * navy, with soft glows alternating sides. It starts and ends on the page
- * navy, so it meets the page hero and the footer without an edge. Cards keep
- * their own solid surface, so content never sits on it unbacked.
+ * The page field shared by the inner pages: the KV wall's mid denim (the
+ * colour the page hero fades into), easing a shade deeper toward the foot,
+ * with a soft light high up. Cards keep their own solid surface, so content
+ * never sits on it unbacked.
  */
 export function PageField({
   children,
@@ -18,7 +18,7 @@ export function PageField({
     <div className={`relative isolate overflow-clip ${className}`}>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,transparent,#000_16rem)] bg-[radial-gradient(60rem_34rem_at_0%_8%,rgba(31,123,255,0.22)_0%,rgba(31,123,255,0)_70%),radial-gradient(56rem_32rem_at_100%_30%,rgba(60,202,255,0.14)_0%,rgba(60,202,255,0)_70%),radial-gradient(60rem_34rem_at_0%_55%,rgba(84,60,230,0.16)_0%,rgba(84,60,230,0)_70%),radial-gradient(56rem_32rem_at_100%_80%,rgba(31,123,255,0.2)_0%,rgba(31,123,255,0)_70%),linear-gradient(180deg,var(--navy-900)_0%,#03208a_14%,#021a76_45%,#03208a_75%,var(--navy-900)_100%)]"
+        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(50rem_26rem_at_50%_22rem,rgba(56,160,255,0.13)_0%,rgba(56,160,255,0)_70%),linear-gradient(180deg,#0d4a80_0rem,#0d4a80_6rem,#0c4274_45%,#0b3c6b_100%)]"
       />
       {children}
     </div>
@@ -26,10 +26,13 @@ export function PageField({
 }
 
 /**
- * Texture, not ornament: the KV's own corner, large and faint, bleeding off
- * the screen edge and fading into the field. `right` sits in the top-right
- * corner of its positioned parent, `left` in the bottom-left; pass a class to
- * fine-tune the offset.
+ * A palm at the edge of the field, as on the home page: placed by its crown,
+ * pushed out past the content, and faint. On a laptop it is rooted at the
+ * foot of the field (its trunk runs down to wherever the field ends, fading
+ * but never to nothing). On a phone only the crown shows: the trunk fades out
+ * just below it, since on a long page a full-length trunk reads as a stray
+ * bar down the screen edge. `right` hangs from the top of the field, `left` sits lower down;
+ * pass a class to fine-tune the offset.
  */
 export function KvTexture({
   side,
@@ -39,25 +42,17 @@ export function KvTexture({
   className?: string;
 }) {
   const right = side === "right";
-  // The art's tiles meet the image border on one edge (the top for the
-  // right-hand corner, the bottom for the flipped left one); fade that edge
-  // so the texture never draws a straight line across the page.
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute -z-10 w-[78vw] max-w-[34rem] sm:w-[52vw] ${
-        right
-          ? "right-0 [mask-image:linear-gradient(to_bottom,transparent,#000_35%)]"
-          : "left-0 [mask-image:linear-gradient(to_top,transparent,#000_35%)]"
-      } ${className}`}
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_0%,#000_40%,rgba(0,0,0,0.45)_100%)]"
     >
-      <img
-        src={heroPatternTop}
-        alt=""
-        loading="lazy"
-        className={`block w-full select-none opacity-[0.22] [mask-image:radial-gradient(circle_at_0%_0%,#000_28%,transparent_70%)] ${
-          right ? "-scale-x-100" : "-scale-y-100"
-        }`}
+      <RootedPalm
+        className={`w-[24rem] max-lg:[mask-image:linear-gradient(to_bottom,#000_50%,transparent_92%)] opacity-30 sm:w-[28rem] lg:w-[30rem] lg:opacity-25 ${
+          right
+            ? "right-[-12.5rem] -scale-x-100 sm:right-[-14rem] lg:right-[calc(50%-54rem)]"
+            : "left-[-12.5rem] sm:left-[-14rem] lg:left-[calc(50%-54rem)]"
+        } ${className}`}
       />
     </div>
   );

@@ -17,7 +17,7 @@ export function usePassQr(value: string) {
       type: "svg",
       errorCorrectionLevel: "H",
       margin: 0,
-      color: { dark: "#01145f", light: "#ffffff00" },
+      color: { dark: "#0a2c52", light: "#ffffff00" },
     }).then((s) => alive && setSvg(s));
     return () => {
       alive = false;

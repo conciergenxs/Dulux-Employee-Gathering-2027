@@ -103,8 +103,7 @@ export function PanelHead({
   return (
     <div className="flex items-end justify-between gap-4">
       <div>
-        <p className="flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-sky">
-          <span aria-hidden className="h-px w-8 bg-gradient-to-r from-white/0 to-sky/80" />
+        <p className="font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.18em] text-sky sm:text-[0.9375rem]">
           {eyebrow}
         </p>
         <h2 className="wordmark mt-3 pr-[0.06em] text-[clamp(1.75rem,6.4vw,2.25rem)] text-white">

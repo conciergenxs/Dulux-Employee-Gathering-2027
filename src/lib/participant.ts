@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react";
-import type { PulseWord, StrengthId } from "@/lib/event";
+import { CHECK_INS, type CheckInId, type PulseWord, type StrengthId } from "@/lib/event";
+
+export type { CheckInId };
 
 /**
  * Frontend-only prototype state.
@@ -23,8 +25,6 @@ export const PARTICIPANT = {
   team: "Team 07",
   room: "1207",
 } as const;
-
-export type CheckInId = "welcome" | "sunset-welcome";
 
 export type Question = { id: string; text: string; at: string };
 
@@ -126,14 +126,9 @@ export const actions = {
 
 /* ── Derived progress ─────────────────────────────────────────────── */
 
-export const CHECK_IN_ACTIVITIES: { id: CheckInId; name: string; note: string }[] = [
-  { id: "welcome", name: "The Welcome Experience", note: "Registrasi · lobi hotel" },
-  { id: "sunset-welcome", name: "Sunset Welcome", note: "Venue malam" },
-];
-
 export function progressOf(s: ParticipantState) {
   const checklist = [Boolean(s.firstStroke), s.questions.length > 0];
-  const activities = CHECK_IN_ACTIVITIES.map((a) => Boolean(s.checkIns[a.id]));
+  const activities = CHECK_INS.map((a) => Boolean(s.checkIns[a.id]));
   return {
     checklistDone: checklist.filter(Boolean).length,
     checklistTotal: checklist.length,

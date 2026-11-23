@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * The KV's eyebrow: tracked capitals between hairlines that fade outward.
- * `align="start"` keeps a single rule leading into the text, for headings
- * that sit on the left.
+ * The KV's eyebrow: the lockup's condensed capitals, on their own (no
+ * hairlines). `align="start"` sets it flush left, for headings that sit on
+ * the left.
  */
 export function RuledEyebrow({
   children,
@@ -17,28 +17,17 @@ export function RuledEyebrow({
   if (align === "start")
     return (
       <p
-        className={`flex items-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-sky sm:text-xs ${className}`}
+        className={`font-[family-name:var(--font-kv-condensed)] text-[0.875rem] uppercase tracking-[0.2em] text-sky sm:text-[0.9375rem] ${className}`}
       >
-        <span
-          aria-hidden
-          className="h-px w-8 shrink-0 bg-gradient-to-r from-white/0 to-sky/80 sm:w-10"
-        />
-        <span>{children}</span>
+        {children}
       </p>
     );
   return (
     <p
-      className={`flex w-full items-center justify-center gap-3 text-[0.6875rem] font-semibold uppercase tracking-[0.3em] text-white/85 sm:gap-5 sm:text-[0.8125rem] sm:tracking-[0.36em] ${className}`}
+      className={`w-full text-center font-[family-name:var(--font-kv-condensed)] text-[0.9375rem] uppercase tracking-[0.22em] text-white/85 sm:text-[1.0625rem] ${className}`}
     >
-      <span
-        aria-hidden
-        className="h-px max-w-16 flex-1 bg-gradient-to-r from-white/0 via-white/35 to-white/70 sm:max-w-24"
-      />
-      <span className="shrink-0 whitespace-nowrap pl-[0.3em] sm:pl-[0.36em]">{children}</span>
-      <span
-        aria-hidden
-        className="h-px max-w-16 flex-1 bg-gradient-to-l from-white/0 via-white/35 to-white/70 sm:max-w-24"
-      />
+      {/* The leading pad balances the tracking after the last letter. */}
+      <span className="pl-[0.22em]">{children}</span>
     </p>
   );
 }

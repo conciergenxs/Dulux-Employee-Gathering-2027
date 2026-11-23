@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { useId } from "react";
 import type { StrengthId } from "@/lib/event";
+import { KvPiece, type ClusterTile } from "@/components/kv/KickOffKv";
 
 /**
  * The Living Canvas, drawn in code.
@@ -24,15 +25,17 @@ const PATHS: Record<Exclude<Shape, "circle">, string> = {
   half: "M0 0A50 50 0 0 1 0 100Z",
 };
 
-/** [top colour, bottom colour] — each tile is lit from above like the KV. */
+/** [top colour, bottom colour] — each tile is lit from above. Sampled from
+ *  the Employee Kick Off 2027 KV: the wall's denims, the window's cyan, and
+ *  the frame's silver (the lightest tone). */
 const TONES: Record<Tone, [string, string]> = {
-  ice: ["#d9f3ff", "#9cd6fd"],
-  sky: ["#a9dcff", "#5aa9ff"],
-  cyan: ["#7fe3ff", "#22a6ff"],
-  electric: ["#4a9bff", "#1a5df0"],
-  royal: ["#1f55f0", "#0a2fc4"],
-  deep: ["#0b2fb8", "#04198a"],
-  navy: ["#062482", "#021561"],
+  ice: ["#f3f5f7", "#a9b0b7"],
+  sky: ["#8fb8d8", "#4f80aa"],
+  cyan: ["#6fd0f2", "#1c9ccd"],
+  electric: ["#3a6f9e", "#195790"],
+  royal: ["#2a6491", "#0f4a7c"],
+  deep: ["#0f5189", "#0a3e6e"],
+  navy: ["#0b3a64", "#072b4f"],
 };
 
 export type Tile = {
@@ -47,7 +50,7 @@ export type Tile = {
 
 function TileShape({ tile, gid }: { tile: Tile; gid: string }) {
   const fill = tile.ghost ? "none" : `url(#${gid}-${tile.tone})`;
-  const stroke = tile.ghost ? "rgba(156,214,253,0.35)" : undefined;
+  const stroke = tile.ghost ? "rgba(223,230,236,0.35)" : undefined;
   const common = {
     fill,
     stroke,
@@ -166,34 +169,36 @@ export const KV_BOTTOM_RIGHT: Tile[] = [
 
 /* ── One piece per First Stroke strength ───────────────────────────── */
 
-export const STRENGTH_TILES: Record<StrengthId, Tile[]> = {
-  // Two arcs reaching for each other: a bridge.
+/**
+ * Each strength as a piece of the Employee Kick Off 2027 KV wall: four tiles
+ * (rings, insets, arches, silver) whose arrangement carries the idea.
+ */
+const STRENGTH_KV: Record<StrengthId, ClusterTile[]> = {
+  // Two sets of rings reaching for each other over a shared base: a bridge.
   connect: [
-    { x: 0, y: 0, shape: "quarter", tone: "sky", rot: 90 },
-    { x: 1, y: 0, shape: "quarter", tone: "electric", rot: 0 },
-    { x: 0, y: 1, shape: "square", tone: "royal" },
-    { x: 1, y: 1, shape: "square", tone: "deep" },
+    { x: 0, y: 0, kind: "rings", anchor: "br" },
+    { x: 1, y: 0, kind: "rings", anchor: "bl" },
+    { x: 0, y: 1, kind: "inset", span: "w" },
   ],
-  // A new form opening up: circle and leaves.
+  // Something new opening up: arches unfolding around a polished bar.
   create: [
-    { x: 0, y: 0, shape: "circle", tone: "cyan" },
-    { x: 1, y: 0, shape: "leaf", tone: "electric", rot: 90 },
-    { x: 0, y: 1, shape: "leaf", tone: "royal" },
-    { x: 1, y: 1, shape: "arch", tone: "ice" },
+    { x: 0, y: 0, kind: "arch", anchor: "b" },
+    { x: 1, y: 0, kind: "silver" },
+    { x: 0, y: 1, kind: "rings", anchor: "tr" },
+    { x: 1, y: 1, kind: "arch", anchor: "t" },
   ],
-  // Shapes that fit into each other.
+  // Pieces that fit: each corner answers the one beside it.
   solve: [
-    { x: 0, y: 0, shape: "square", tone: "electric" },
-    { x: 1, y: 0, shape: "quarter", tone: "ice", rot: 180 },
-    { x: 0, y: 1, shape: "quarter", tone: "sky", rot: 0 },
-    { x: 1, y: 1, shape: "square", tone: "deep" },
+    { x: 0, y: 0, kind: "inset" },
+    { x: 1, y: 0, kind: "rings", anchor: "bl" },
+    { x: 0, y: 1, kind: "rings", anchor: "tr" },
+    { x: 1, y: 1, kind: "inset" },
   ],
-  // Momentum: arches stepping forward.
+  // Momentum: silver bars, then arches stepping forward.
   deliver: [
-    { x: 0, y: 0, shape: "drop", tone: "royal" },
-    { x: 1, y: 0, shape: "arch", tone: "electric", rot: 90 },
-    { x: 0, y: 1, shape: "arch", tone: "sky", rot: 90 },
-    { x: 1, y: 1, shape: "half", tone: "cyan", rot: 0 },
+    { x: 0, y: 0, kind: "bars", span: "h" },
+    { x: 1, y: 0, kind: "arch", anchor: "l" },
+    { x: 1, y: 1, kind: "arch", anchor: "l" },
   ],
 };
 
@@ -206,16 +211,7 @@ export function StrengthPiece({
   className?: string;
   assemble?: boolean;
 }) {
-  return (
-    <Mosaic
-      tiles={STRENGTH_TILES[strength]}
-      cols={2}
-      rows={2}
-      gap={6}
-      className={className}
-      assemble={assemble}
-    />
-  );
+  return <KvPiece tiles={STRENGTH_KV[strength]} animate={assemble} className={className} />;
 }
 
 /** The empty slot shown before The First Stroke is made. */
@@ -284,7 +280,7 @@ export function TopSweep({ className = "" }: { className?: string }) {
         <linearGradient id={`${gid}-fill`} x1="1" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#3ccaff" stopOpacity="0.55" />
           <stop offset="55%" stopColor="#1f7bff" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#0a37db" stopOpacity="0" />
+          <stop offset="100%" stopColor="#0d4a80" stopOpacity="0" />
         </linearGradient>
         <linearGradient id={`${gid}-edge`} x1="1" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#b5fcfd" stopOpacity="0.9" />

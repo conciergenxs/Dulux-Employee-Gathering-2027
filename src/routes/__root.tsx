@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { MotionConfig } from "motion/react";
 
 import appCss from "../styles.css?url";
-import { ScrollProgress, SiteChrome, SiteFooter } from "@/components/site/SiteChrome";
+import { SiteChrome, SiteFooter } from "@/components/site/SiteChrome";
 import { NotFound } from "@/components/site/NotFound";
 import { EVENT } from "@/lib/event";
 // Loaded with the shell so `?demo=1` is picked up on any page.
@@ -53,7 +53,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#01145f" },
+      { name: "theme-color", content: "#0a2c52" },
       { title: `${EVENT.theme} — ${EVENT.name}` },
       { name: "description", content: description },
       { property: "og:type", content: "website" },
@@ -95,7 +95,6 @@ function RootComponent() {
   // drops transforms for those visitors while server and client markup match.
   return (
     <MotionConfig reducedMotion="user">
-      <ScrollProgress />
       <a href="#content" className="skip-link">
         Skip to main content
       </a>

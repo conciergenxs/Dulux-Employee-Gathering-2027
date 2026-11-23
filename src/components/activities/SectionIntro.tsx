@@ -1,12 +1,10 @@
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
 import { RuledEyebrow } from "@/components/site/RuledEyebrow";
 
 /**
  * The opener every activity section shares (Infinity pattern): the title on
- * the left, a one-line standfirst beside it on a laptop, and quick facts
- * under that.
+ * the left, and a one-line standfirst beside it on a laptop.
  */
 export function SectionIntro({
   id,
@@ -43,15 +41,5 @@ export function SectionIntro({
         {children}
       </Reveal>
     </div>
-  );
-}
-
-/** A quick fact under an intro: "Wed, 16 Dec", "Arrival". */
-export function FactPill({ icon: Icon, children }: { icon: LucideIcon; children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5 text-[0.8125rem] font-medium text-white/85">
-      <Icon className="size-3.5 text-cyan" />
-      {children}
-    </span>
   );
 }

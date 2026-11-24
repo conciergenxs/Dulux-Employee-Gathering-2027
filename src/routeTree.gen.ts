@@ -14,6 +14,7 @@ import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as PassportRouteImport } from './routes/passport'
 import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as SignRouteImport } from './routes/sign'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const ScheduleRoute = ScheduleRouteImport.update({
   path: '/schedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignRoute = SignRouteImport.update({
+  id: '/sign',
+  path: '/sign',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/guide': typeof GuideRoute
   '/passport': typeof PassportRoute
   '/schedule': typeof ScheduleRoute
+  '/sign': typeof SignRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/guide': typeof GuideRoute
   '/passport': typeof PassportRoute
   '/schedule': typeof ScheduleRoute
+  '/sign': typeof SignRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,22 @@ export interface FileRoutesById {
   '/guide': typeof GuideRoute
   '/passport': typeof PassportRoute
   '/schedule': typeof ScheduleRoute
+  '/sign': typeof SignRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/activities' | '/guide' | '/passport' | '/schedule'
+  fullPaths:
+    '/' | '/activities' | '/guide' | '/passport' | '/schedule' | '/sign'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/activities' | '/guide' | '/passport' | '/schedule'
-  id: '__root__' | '/' | '/activities' | '/guide' | '/passport' | '/schedule'
+  to: '/' | '/activities' | '/guide' | '/passport' | '/schedule' | '/sign'
+  id:
+    | '__root__'
+    | '/'
+    | '/activities'
+    | '/guide'
+    | '/passport'
+    | '/schedule'
+    | '/sign'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +94,7 @@ export interface RootRouteChildren {
   GuideRoute: typeof GuideRoute
   PassportRoute: typeof PassportRoute
   ScheduleRoute: typeof ScheduleRoute
+  SignRoute: typeof SignRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign': {
+      id: '/sign'
+      path: '/sign'
+      fullPath: '/sign'
+      preLoaderRoute: typeof SignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuideRoute: GuideRoute,
   PassportRoute: PassportRoute,
   ScheduleRoute: ScheduleRoute,
+  SignRoute: SignRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

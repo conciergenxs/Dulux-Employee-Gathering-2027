@@ -960,3 +960,35 @@ export const COMMITMENT_CARD = [
 /** Deck p.106–107 — what happens to the canvas. */
 export const LIVING_LEGACY =
   "Setelah semua komitmen terkumpul, karya kanvas bersama dipindahkan ke lobi HQ AkzoNobel sebagai Living Legacy Wall: yang kita bangun bersama tetap terlihat, lama setelah acara selesai.";
+
+/* ── AOP Charter Sign-Off (Kick-off Night, client deck) ────────────── */
+
+export const AOP_CHARTER = {
+  title: "One Vision. One Shared Commitment.",
+  tagline: "Turning our ambitions into collective action.",
+  text: "Upacara tanda tangan bersama: Brand Representatives Dulux dan seluruh karyawan menegaskan komitmen menuju visi 2027.",
+  /** The LED's QR carries this key; the signing page opens only with it. */
+  key: "GT27-AOP",
+  steps: [
+    {
+      id: "leadership",
+      title: "Leadership Signing",
+      text: "Brand Representatives naik ke panggung dan menandatangani AOP commitment board.",
+    },
+    {
+      id: "participation",
+      title: "Employee Participation",
+      text: "Scan QR di layar LED untuk membuka halaman tanda tangan di microsite ini.",
+    },
+    {
+      id: "activation",
+      title: "Digital Signature Activation",
+      text: "Lihat tanda tangan digitalmu yang sudah disiapkan, lalu tekan tombol konfirmasi.",
+    },
+    {
+      id: "reveal",
+      title: "Realtime Commitment Reveal",
+      text: "Tanda tangan yang aktif muncul langsung di LED, membentuk satu dinding komitmen bersama.",
+    },
+  ],
+};

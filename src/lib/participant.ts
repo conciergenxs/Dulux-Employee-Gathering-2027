@@ -33,6 +33,8 @@ export type ParticipantState = {
   questions: Question[];
   checkIns: Partial<Record<CheckInId, string>>;
   pulse: { word: PulseWord; at: string } | null;
+  /** AOP Charter Sign-Off: opened by scanning the LED QR, then signed. */
+  aop: { unlockedAt: string; signedAt?: string } | null;
 };
 
 const KEY = "deg27-prototype-v1";
@@ -42,6 +44,7 @@ const EMPTY: ParticipantState = {
   questions: [],
   checkIns: {},
   pulse: null,
+  aop: null,
 };
 
 let current: ParticipantState = EMPTY;
@@ -115,6 +118,15 @@ export const actions = {
   },
   setPulse(word: PulseWord) {
     commit({ ...getSnapshot(), pulse: { word, at: now() } });
+  },
+  unlockAop() {
+    const s = getSnapshot();
+    if (s.aop) return;
+    commit({ ...s, aop: { unlockedAt: now() } });
+  },
+  signAop() {
+    const s = getSnapshot();
+    commit({ ...s, aop: { unlockedAt: s.aop?.unlockedAt ?? now(), signedAt: now() } });
   },
   clearPulse() {
     commit({ ...getSnapshot(), pulse: null });

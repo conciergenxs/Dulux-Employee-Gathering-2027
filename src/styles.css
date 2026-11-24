@@ -7,9 +7,21 @@
 @import "@fontsource/poppins/700.css";
 @import "@fontsource/poppins/800-italic.css";
 @import "@fontsource/poppins/900-italic.css";
-/* Employee Kick Off 2027 KV: the chrome wordmark and the condensed lockup. */
-@import "@fontsource/montserrat/800.css";
+/* Employee Kick Off 2027 KV: the condensed lockup. */
 @import "@fontsource/oswald/400.css";
+/* The pre-generated handwritten signature on the AOP signing page. */
+@import "@fontsource/great-vibes/400.css";
+
+/* The KV wordmark and headline face. It comes in one weight (Regular), so
+   headlines thicken it with a stroke of their own colour (--headline-weight)
+   rather than asking the browser to fake a bold. */
+@font-face {
+  font-family: "Colour Sans";
+  src: url("./font/Colour Sans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Laptop browsers with little height to spare (browser chrome, scaled
    displays). The home hero tightens on these instead of scrolling. */
@@ -175,21 +187,25 @@
 /* Headlines speak in the KV wordmark's voice: heavy, italic, extended. */
 @utility t-display {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
   text-transform: uppercase;
   font-size: clamp(2.25rem, 8.4vw, 4.25rem);
   line-height: 1.02;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 @utility t-h2 {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
   text-transform: uppercase;
   font-size: clamp(1.75rem, 4.8vw, 2.625rem);
   line-height: 1.02;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 @utility t-h3 {
   font-family: var(--font-body-family);
@@ -200,22 +216,26 @@
 }
 @utility t-h4 {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
   text-transform: uppercase;
   font-size: 1.375rem;
   line-height: 1.02;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 /* The headline voice, after the KV: the wordmark's geometric face, upright,
    heavy, in plain white. (The chrome treatment is kept for the hero.) */
 @utility wordmark {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
   text-transform: uppercase;
   line-height: 1.02;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 @utility eyebrow {
   font-family: var(--font-kv-condensed);
@@ -394,7 +414,7 @@
 
 /* ── Employee Kick Off 2027 KV ──────────────────────────────────── */
 :root {
-  --font-kv-chrome: "Montserrat", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-kv-chrome: "Colour Sans", "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-kv-condensed: "Oswald", "Arial Narrow", ui-sans-serif, sans-serif;
 }
 
@@ -415,11 +435,11 @@
    that recedes toward the middle of the line. */
 .kv-chrome {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
   font-style: normal;
   text-transform: uppercase;
   line-height: 1;
-  letter-spacing: 0.005em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   /* The extrusion is set letter by letter; the faces must match it exactly. */
   font-kerning: none;
@@ -442,6 +462,11 @@
 }
 .kv-chrome > span {
   grid-area: 1 / 1;
+  /* Colour Sans comes in Regular only: every layer carries the same stroke,
+     so the letters thicken to the KV's weight and the layers stay aligned.
+     The stroke takes each layer's own fill (solid or polished metal). */
+  -webkit-text-stroke: 0.075em currentColor;
+  paint-order: stroke fill;
 }
 .kv-chrome-body {
   color: #4b525b;
@@ -524,11 +549,13 @@
    one line polished to silver. */
 @utility kv-heading {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
   text-transform: uppercase;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 @utility kv-silver {
   background-image: linear-gradient(
@@ -647,9 +674,11 @@
 /* Numerals and labels set in the display face follow the wordmark too. */
 .font-display {
   font-family: var(--font-kv-chrome);
-  font-weight: 800;
+  font-weight: 400;
+  -webkit-text-stroke: var(--headline-weight, 0.08em) currentColor;
+  paint-order: stroke fill;
   font-style: normal;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
 }
 
 /* ── White sections ─────────────────────────────────────────────── */
@@ -798,21 +827,18 @@
   ):not([data-tone="dark"] *) {
   background-color: #ffffff;
 }
-/* Icon chips (a tinted square or circle holding a cyan icon) turn solid KV
-   blue with a white icon. */
+/* Icon chips (a tinted square or circle, laid out as a grid, holding a cyan
+   icon) turn KV blue with a white icon. Inline pills keep their light tint. */
 .tone-light
-  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12).text-cyan:not(
-    [data-tone="dark"] *
-  ),
-.tone-light
-  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12):has(
-    > svg.text-cyan
+  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12):is(.grid):is(
+    .text-cyan,
+    :has(> svg.text-cyan)
   ):not([data-tone="dark"] *) {
   background: var(--gradient-kv-blue);
   color: #ffffff;
 }
 .tone-light
-  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12)
+  :is(.bg-white\/\[0\.08\], .bg-white\/8, .bg-white\/\[0\.06\], .bg-cyan\/12):is(.grid)
   > svg.text-cyan:not([data-tone="dark"] *) {
   color: #ffffff;
 }

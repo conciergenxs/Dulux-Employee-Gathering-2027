@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Band } from "@/components/site/Band";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { Camera, ChefHat, Puzzle, Sparkles, Trophy, type LucideIcon } from "lucide-react";
+import { Camera, ChefHat, PenLine, Puzzle, Sparkles, Trophy, type LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionIntro } from "@/components/activities/SectionIntro";
 import {
@@ -20,10 +20,12 @@ import {
   KICKOFF_AGENDA,
   KICKOFF_FLOW,
   KICKOFF_ONSITE,
+  AOP_CHARTER,
   RUNDOWN,
   TEAM_BUILDING,
 } from "@/lib/event";
 import { ACTIVITY_PHOTO } from "@/lib/quota";
+import { AopStatus, AopSteps } from "@/components/aop/AopSection";
 import { MotionImage } from "@/components/site/MotionImage";
 import matchUp from "@/assets/games/match-up.webp";
 import oneStroke from "@/assets/games/one-stroke.webp";
@@ -33,7 +35,7 @@ import bridgeTheGap from "@/assets/games/bridge-the-gap.webp";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type Part = "team" | "night";
+type Part = "team" | "night" | "aop";
 
 /**
  * Day 2's activities: team building by day, Kick-off Night after dark. The
@@ -55,6 +57,13 @@ const PARTS: PartChip<Part>[] = [
     sub: "Greater Together",
     icon: Sparkles,
     moments: ["kickoff-night"],
+  },
+  {
+    id: "aop",
+    label: "AOP Charter",
+    sub: "Digital Signature",
+    icon: PenLine,
+    moments: ["aop-charter"],
   },
 ];
 
@@ -81,7 +90,13 @@ export function DayTwo() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.35, ease: EASE }}
         >
-          {part === "team" ? <TeamBuildingSection /> : <KickoffSection />}
+          {part === "team" ? (
+            <TeamBuildingSection />
+          ) : part === "night" ? (
+            <KickoffSection />
+          ) : (
+            <AopCharterSection />
+          )}
         </motion.div>
       </AnimatePresence>
     </div>
@@ -358,6 +373,35 @@ function KickoffSection() {
             </ul>
           </Reveal>
         </div>
+      </Band>
+    </div>
+  );
+}
+
+/* ── AOP Charter Sign-Off ─────────────────────────────────────────── */
+
+/**
+ * Its own part of Day 2: signed on the microsite during Kick-off Night, but
+ * only once the LED's QR has been scanned (client deck).
+ */
+function AopCharterSection() {
+  return (
+    <div id="aop-charter" className="scroll-mt-28">
+      <Band tone="light" pattern={false} className="pb-14 sm:pb-20">
+        <SectionIntro
+          eyebrow="Kick-off Night · AOP Charter Sign-Off"
+          title="One Vision."
+          accent="One Shared Commitment."
+          text={`${AOP_CHARTER.tagline} ${AOP_CHARTER.text}`}
+        />
+        <Reveal delay={0.06} className="mt-8 block">
+          <AopStatus />
+        </Reveal>
+      </Band>
+
+      <Band tone="dark" palm="right" className="py-14 sm:py-20">
+        <BlockHead title="The Signing Experience" />
+        <AopSteps />
       </Band>
     </div>
   );

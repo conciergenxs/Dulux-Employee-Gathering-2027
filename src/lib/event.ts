@@ -619,7 +619,7 @@ export const ARRIVAL_STEPS = [
   },
 ];
 
-/** Deck p.33 — starter kit. Visuals are placeholders until final mockups arrive. */
+/** Deck p.33 — starter kit (mockups in src/assets/kit). */
 export const WELCOME_KIT = [
   {
     id: "badge",

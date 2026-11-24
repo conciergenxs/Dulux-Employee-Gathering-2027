@@ -7,19 +7,15 @@ import {
   BedDouble,
   Camera,
   Puzzle,
-  Fan,
-  IdCard,
   MessageCircleQuestion,
   MessagesSquare,
   Mic,
   PencilLine,
   Music,
   QrCode,
-  Shirt,
   Sparkles,
   Sunset,
   Users,
-  type LucideIcon,
 } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
@@ -75,6 +71,10 @@ import overdoze from "@/assets/lineup/overdoze.webp";
 import nayaNyxx from "@/assets/lineup/naya-nyxx.webp";
 import nikitaRamli from "@/assets/lineup/nikita-ramli.webp";
 import grindBoys from "@/assets/lineup/grind-boys.webp";
+import kitBadge from "@/assets/kit/badge.webp";
+import kitHat from "@/assets/kit/hat.webp";
+import kitTee from "@/assets/kit/tee.webp";
+import kitFan from "@/assets/kit/fan.webp";
 
 /**
  * One tab per day, each listing its moments in rundown order. What happens
@@ -478,11 +478,12 @@ function DayOne({ part, onPart }: { part: Part; onPart: (p: Part) => void }) {
 
 /* ── Day 1 · Arrival ──────────────────────────────────────────────── */
 
-const KIT_ICON: Record<(typeof WELCOME_KIT)[number]["id"], LucideIcon> = {
-  badge: IdCard,
-  hat: Sparkles,
-  tee: Shirt,
-  fan: Fan,
+/** Starter kit mockups (deck p.33), cut out from the client's slide. */
+const KIT_IMAGE: Record<(typeof WELCOME_KIT)[number]["id"], { src: string; fit: string }> = {
+  badge: { src: kitBadge, fit: "p-[7%]" },
+  hat: { src: kitHat, fit: "p-[11%]" },
+  tee: { src: kitTee, fit: "p-[9%]" },
+  fan: { src: kitFan, fit: "p-[7%]" },
 };
 
 function WelcomeSection() {
@@ -504,7 +505,7 @@ function WelcomeSection() {
           text="Tunjukkan QR My Canvas Pass-mu ke crew di meja registrasi, lobi hotel. Begitu dipindai, pass-mu menampilkan “Your Piece Has Arrived”."
         />
 
-        {/* What arrival hands over (deck p.32–33). Kit visuals are placeholders. */}
+        {/* What arrival hands over (deck p.32–33). */}
       </Band>
       <Band tone="dark" palm="right" className="py-14 sm:py-20">
         <div>
@@ -516,12 +517,18 @@ function WelcomeSection() {
           </Reveal>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {WELCOME_KIT.map((k, i) => {
-              const Icon = KIT_ICON[k.id];
+              const img = KIT_IMAGE[k.id];
               return (
                 <Reveal key={k.id} delay={i * 0.05}>
                   <figure className="surface flex h-full flex-col overflow-hidden">
-                    <div className="grid aspect-square place-items-center bg-[linear-gradient(160deg,#1d6aa8_0%,#0d4a80_55%,#0b3c6b_100%)]">
-                      <Icon className="size-10 text-ice" strokeWidth={1.5} />
+                    <div className="relative aspect-square bg-[radial-gradient(120%_90%_at_50%_30%,#ffffff_0%,#eef5fb_55%,#cfe2f3_100%)]">
+                      <img
+                        src={img.src}
+                        alt={k.name}
+                        loading="lazy"
+                        decoding="async"
+                        className={`absolute inset-0 size-full ${img.fit} object-contain drop-shadow-[0_10px_14px_rgba(7,26,51,0.22)]`}
+                      />
                     </div>
                     <figcaption className="flex-1 px-4 py-3.5">
                       <span className="block text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-sky">

@@ -7,7 +7,9 @@ import { Reveal } from "@/components/site/Reveal";
 import { KV_BOTTOM_RIGHT, Mosaic, TopSweep, type Tile } from "@/components/canvas/Canvas";
 import { Badge } from "@/components/activities/Badges";
 import { RuledEyebrow } from "@/components/site/RuledEyebrow";
+import { Band } from "@/components/site/Band";
 import {
+  DOORPRIZE,
   EVENT,
   MANIFESTO,
   PHASES,
@@ -34,6 +36,9 @@ import journey2 from "@/assets/the-journey/journey-2.webp";
 import journey2Lg from "@/assets/the-journey/journey-2@1.5x.webp";
 import journey3 from "@/assets/the-journey/journey-3.webp";
 import journey3Lg from "@/assets/the-journey/journey-3@1.5x.webp";
+import osmoPocket from "@/assets/doorprize/dji-osmo-pocket-3.webp";
+import xiaomiPad from "@/assets/doorprize/xiaomi-pad-7.webp";
+import huaweiWatch from "@/assets/doorprize/huawei-watch-fit-5.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -61,6 +66,7 @@ function HomePage() {
           footer, so the page has a rhythm instead of one long blue field. */}
       <Hero />
       <Journey />
+      <Doorprize />
       {SHOW_PRE_EVENT_SECTIONS && (
         <>
           <RoadToEvent />
@@ -572,6 +578,104 @@ function Journey() {
           })}
         </ol>
       </div>
+    </section>
+  );
+}
+
+/* ── Doorprize ────────────────────────────────────────────────────── */
+
+const PRIZE_PHOTO: Record<(typeof DOORPRIZE.prizes)[number]["id"], string> = {
+  osmo: osmoPocket,
+  pad: xiaomiPad,
+  watch: huaweiWatch,
+};
+
+/**
+ * Greater Together Doorprize (client deck): a blue band after the white
+ * journey. The prizes are shown the way the starter kit is, then how to
+ * qualify.
+ */
+function Doorprize() {
+  const winners = DOORPRIZE.prizes.reduce((n, p) => n + p.winners, 0);
+  return (
+    <section className="px-5" aria-labelledby="doorprize-title">
+      <Band tone="dark" palm="right" className="mx-auto max-w-5xl py-16 sm:py-24">
+        <Reveal className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <KvEyebrow>Doorprize</KvEyebrow>
+          <h2
+            id="doorprize-title"
+            className="kv-heading mt-5 text-[clamp(1.75rem,8.6vw,3.5rem)] leading-[1.04] text-white sm:mt-6"
+          >
+            <span className="block">Greater Together</span>
+            <span className="text-together block py-[0.04em]">Doorprize</span>
+          </h2>
+          <p className="mt-4 max-w-md text-[0.9375rem] leading-relaxed text-white/70 sm:text-base">
+            {DOORPRIZE.tagline} Ada {winners} hadiah yang diundi live di panggung.
+          </p>
+        </Reveal>
+
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 md:grid-cols-3">
+          {DOORPRIZE.prizes.map((p, i) => {
+            const grand = i === 0;
+            return (
+              <Reveal
+                as="li"
+                key={p.id}
+                delay={i * 0.05}
+                className={grand ? "col-span-2 md:col-span-1" : ""}
+              >
+                <figure className="surface flex h-full flex-col overflow-hidden">
+                  <div
+                    className={`relative bg-[radial-gradient(120%_90%_at_50%_30%,#ffffff_0%,#eef5fb_55%,#cfe2f3_100%)] ${
+                      grand ? "aspect-[16/10] md:aspect-square" : "aspect-square"
+                    }`}
+                  >
+                    <img
+                      src={PRIZE_PHOTO[p.id]}
+                      alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                      className={`absolute inset-0 size-full object-contain drop-shadow-[0_10px_14px_rgba(7,26,51,0.22)] ${grand ? "p-[6%] md:p-[12%]" : "p-[12%]"}`}
+                    />
+                  </div>
+                  <figcaption className="flex-1 px-4 py-3.5">
+                    <span className="block text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-sky">
+                      {grand ? "Grand prize" : "Doorprize"}
+                    </span>
+                    <span className="mt-1 block text-[0.9375rem] font-semibold text-white">
+                      {p.name}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-white/60">{p.winners} pemenang</span>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            );
+          })}
+        </ul>
+
+        <Reveal className="mt-12 block sm:mt-16">
+          <h3 className="mb-4 text-lg font-semibold text-white">Cara masuk undian</h3>
+        </Reveal>
+        <ol className="grid gap-3 md:grid-cols-3">
+          {DOORPRIZE.steps.map((st, i) => (
+            <Reveal as="li" key={st.title} delay={i * 0.05} className="h-full">
+              <div className="surface flex h-full gap-4 p-4 sm:p-5 md:flex-col md:gap-2">
+                <span className="w-8 shrink-0 font-display text-2xl leading-none text-sky">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[0.9375rem] font-semibold text-white">
+                    {st.title}
+                  </span>
+                  <span className="mt-1 block text-sm leading-relaxed text-white/60">
+                    {st.text}
+                  </span>
+                </span>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+      </Band>
     </section>
   );
 }

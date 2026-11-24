@@ -333,6 +333,7 @@ const LANDS_END = "Land's End PIK 2";
 const RESTO = "Restoran Swissôtel";
 const BALLROOM = "Ballroom Swissôtel";
 const SUNSET_STAGE = "Sunset Stage";
+const BALLROOM_FOYER = "Foyer Ballroom Swissôtel";
 
 export const RUNDOWN: Record<DayId, DayRundown> = {
   day1: {
@@ -556,6 +557,14 @@ export const CHECK_INS = [
     mode: "crew",
     where: LANDS_END,
     how: "Scan QR My Canvas Pass saat tiba di venue team building, lalu bergabung dengan timmu.",
+  },
+  {
+    id: "colour-sync",
+    day: "day2",
+    name: "Dulux Colour Sync",
+    mode: "crew",
+    where: BALLROOM_FOYER,
+    how: "Main Dulux Colour Sync bersama timmu, lalu tunjukkan QR My Canvas Pass ke crew di booth. Setelah itu, tukarkan hadiah timmu di redemption area.",
   },
   {
     id: "kickoff-night",
@@ -947,6 +956,83 @@ export const KICKOFF_ONSITE = [
     text: "Chef menyiapkan canapé secara live di foyer: a taste of creativity, served fresh.",
   },
 ];
+
+/**
+ * Games engagement before Kick-off Night (client deck): a Human Slot Machine
+ * style booth where a team tries to lift the same Dulux shade at once. Every
+ * team takes a prize home; matching the shade decides which one.
+ */
+export const COLOUR_SYNC = {
+  name: "Dulux Colour Sync",
+  tagline: "Same Shade. Same Moment. Greater Together.",
+  text: "Game tim yang terinspirasi dari Human Slot Machine. Tantangannya: tebak dan angkat shade Dulux yang sama di saat yang sama, cukup bermodal kekompakan dan insting.",
+  where: BALLROOM_FOYER,
+  steps: [
+    {
+      title: "Listen To The Cue",
+      text: "Game Master memberi petunjuk singkat tentang sebuah warna, bisa berupa emosi atau gambaran.",
+    },
+    {
+      title: "Make Your Guess",
+      text: "Setiap peserta memilih satu shade card Dulux yang paling cocok dengan petunjuknya.",
+    },
+    {
+      title: "Lift It Together",
+      text: "Di hitungan ketiga, semua mengangkat shade pilihannya secara bersamaan.",
+    },
+    {
+      title: "Find The Match",
+      text: "Tim yang shade-nya sama semua mendapat poin.",
+    },
+  ],
+  rewards: {
+    intro: "Setiap tim yang ikut pasti dapat hadiah. Bedanya ada di hasil timmu.",
+    tiers: [
+      {
+        id: "winning",
+        title: "For Winning Team",
+        who: "Untuk tim yang berhasil mengangkat shade yang sama secara bersamaan.",
+        prize: "Customize Tote Bag + Patch Set",
+      },
+      {
+        id: "participants",
+        title: "For Games Participants",
+        who: "Untuk tim yang belum berhasil match. Tetap ada hadiah untuk dibawa pulang.",
+        prize: "Customize Card Holder + Patch Set",
+      },
+    ],
+  },
+  redeemAt: `Redemption Area, ${BALLROOM_FOYER}`,
+} as const;
+
+/**
+ * Greater Together Doorprize (client deck): activity tracked on the microsite,
+ * the 50 most active participants qualify, five are drawn live on stage.
+ */
+export const DOORPRIZE = {
+  title: "Greater Together Doorprize",
+  tagline: "A special appreciation for our most active participants.",
+  text: "Semakin aktif kamu ikut aktivitas selama tiga hari, semakin besar peluangmu masuk undian doorprize.",
+  steps: [
+    {
+      title: "Activity Tracking",
+      text: "Semua aktivitas dan check-in-mu tercatat lewat microsite ini, di My Canvas Pass.",
+    },
+    {
+      title: "Top 50 Selection",
+      text: "50 peserta dengan catatan check-in dan aktivitas terbaik lolos ke undian.",
+    },
+    {
+      title: "Live Raffle Draw",
+      text: "5 pemenang beruntung diundi langsung di atas panggung dari 50 peserta terpilih.",
+    },
+  ],
+  prizes: [
+    { id: "osmo", name: "DJI Osmo Pocket 3", winners: 1 },
+    { id: "pad", name: "Xiaomi Pad 7", winners: 2 },
+    { id: "watch", name: "Huawei Watch Fit 5", winners: 2 },
+  ],
+} as const;
 
 /* ── Day 3 (deck p.104–107) ───────────────────────────────────────── */
 

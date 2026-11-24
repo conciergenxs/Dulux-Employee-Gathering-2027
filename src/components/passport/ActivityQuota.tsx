@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Check, ChevronRight, Hand, MapPin, QrCode, Users } from "lucide-react";
 import { PanelHead } from "@/components/passport/Checklist";
-import { RedemptionStatus } from "@/components/activities/Redemption";
+import { RewardList } from "@/components/activities/Redemption";
 import { Reveal } from "@/components/site/Reveal";
 import { PrototypeNote } from "@/components/activities/Badges";
 import { useDemoMode } from "@/lib/demo";
@@ -24,7 +24,7 @@ const TABS: { id: TabId; label: string; caption: string }[] = [
 /**
  * Activity Quota (Infinity pattern; Dulux sitemap "Activity list & quota"):
  * a tab per day, listing that day's check-ins, and one for redemption: the
- * Sunset Social reward, unlocked by playing both games.
+ * Sunset Social reward (both games played) and the Dulux Colour Sync prize.
  */
 export function ActivityQuota({
   state,
@@ -101,7 +101,7 @@ export function ActivityQuota({
             className="mt-4"
           >
             {tab === "redemption" ? (
-              <RedemptionStatus />
+              <RewardList />
             ) : (
               <ul className="space-y-2.5">
                 {activitiesOn(tab).map((a) => (

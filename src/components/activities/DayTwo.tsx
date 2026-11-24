@@ -2,14 +2,13 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Band } from "@/components/site/Band";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { Camera, ChefHat, PenLine, Puzzle, Sparkles, Trophy, type LucideIcon } from "lucide-react";
+import { PenLine, Puzzle, Sparkles, Trophy } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionIntro } from "@/components/activities/SectionIntro";
 import {
   BlockHead,
   CheckInCard,
   DayHead,
-  Fact,
   NumberedCard,
   PartChips,
   TEXT_LINK,
@@ -21,6 +20,7 @@ import {
   KICKOFF_FLOW,
   KICKOFF_ONSITE,
   AOP_CHARTER,
+  COLOUR_SYNC,
   RUNDOWN,
   TEAM_BUILDING,
 } from "@/lib/event";
@@ -32,6 +32,14 @@ import oneStroke from "@/assets/games/one-stroke.webp";
 import signalMaze from "@/assets/games/signal-maze.webp";
 import stackWithoutHands from "@/assets/games/stack-without-hands.webp";
 import bridgeTheGap from "@/assets/games/bridge-the-gap.webp";
+import prizeWinning from "@/assets/colour-sync/prize-winning.webp";
+import prizeParticipants from "@/assets/colour-sync/prize-participants.webp";
+import mosaicPhotoWall from "@/assets/activities/mosaic-photo-wall.webp";
+import liveCulinary from "@/assets/activities/live-culinary-studio.webp";
+import look1 from "@/assets/dresscode/look-1.webp";
+import look2 from "@/assets/dresscode/look-2.webp";
+import look3 from "@/assets/dresscode/look-3.webp";
+import look4 from "@/assets/dresscode/look-4.webp";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -56,7 +64,7 @@ const PARTS: PartChip<Part>[] = [
     label: "Kick-off Night",
     sub: "Greater Together",
     icon: Sparkles,
-    moments: ["kickoff-night"],
+    moments: ["colour-sync", "kickoff-night"],
   },
   {
     id: "aop",
@@ -93,7 +101,10 @@ export function DayTwo() {
           {part === "team" ? (
             <TeamBuildingSection />
           ) : part === "night" ? (
-            <KickoffSection />
+            <>
+              <ColourSyncSection />
+              <KickoffSection />
+            </>
           ) : (
             <AopCharterSection />
           )}
@@ -276,17 +287,98 @@ function TeamBuildingSection() {
   );
 }
 
+/* ── Dulux Colour Sync ─────────────────────────────────────────────── */
+
+const PRIZE_PHOTO: Record<(typeof COLOUR_SYNC.rewards.tiers)[number]["id"], string> = {
+  winning: prizeWinning,
+  participants: prizeParticipants,
+};
+
+/** The games booth before Kick-off Night, and the prize it opens (client deck). */
+function ColourSyncSection() {
+  const cs = COLOUR_SYNC;
+  return (
+    <div id="colour-sync" className="scroll-mt-28">
+      <Band tone="light" pattern={false} className="pb-14 sm:pb-20">
+        <SectionIntro
+          eyebrow="Day 2 · Before Kick-off"
+          title="Dulux Colour"
+          accent="Sync"
+          text={`${cs.tagline} ${cs.text}`}
+        />
+        <CheckInCard
+          id="colour-sync"
+          image={ACTIVITY_PHOTO["colour-sync"]}
+          alt="Three colleagues lifting shade cards in the Colour Sync booth"
+          mood
+          title="Play At The Colour Sync Booth"
+          text="Main bersama timmu di foyer ballroom sebelum Kick-off Night, lalu tunjukkan QR My Canvas Pass ke crew di booth."
+        />
+      </Band>
+
+      <Band tone="dark" palm="right" className="py-14 sm:py-20">
+        <div>
+          <BlockHead title="How To Play" note={`${cs.steps.length} langkah`} />
+          <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {cs.steps.map((st, i) => (
+              <Reveal as="li" key={st.title} delay={i * 0.05} className="h-full">
+                <NumberedCard n={i + 1} title={st.title} text={st.text} />
+              </Reveal>
+            ))}
+          </ol>
+
+          <div className="mt-12">
+            <BlockHead title="Games Reward" note={cs.rewards.intro} />
+            <div className="grid gap-3 md:grid-cols-2">
+              {cs.rewards.tiers.map((t, i) => (
+                <Reveal key={t.id} delay={i * 0.05} className="h-full">
+                  <div className="surface flex h-full flex-col overflow-hidden">
+                    <div className="relative aspect-[16/9] bg-[radial-gradient(120%_90%_at_50%_30%,#ffffff_0%,#eef5fb_55%,#cfe2f3_100%)]">
+                      <img
+                        src={PRIZE_PHOTO[t.id]}
+                        alt={t.prize}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 size-full object-contain p-[7%] drop-shadow-[0_10px_14px_rgba(7,26,51,0.22)]"
+                      />
+                    </div>
+                    <div className="flex-1 p-5 sm:p-6">
+                      <p className="font-[family-name:var(--font-kv-condensed)] text-[0.8125rem] uppercase tracking-[0.18em] text-sky">
+                        {t.title}
+                      </p>
+                      <p className="mt-1.5 text-[1.0625rem] font-semibold text-white">{t.prize}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-white/60">{t.who}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Band>
+    </div>
+  );
+}
+
 /* ── Kick-off Night ───────────────────────────────────────────────── */
 
-const ONSITE_ICON: Record<string, LucideIcon> = {
-  "Mosaic Photo Wall": Camera,
-  "The Live Culinary Studio": ChefHat,
+const ONSITE_PHOTO: Record<string, { src: string; alt: string }> = {
+  "Mosaic Photo Wall": {
+    src: mosaicPhotoWall,
+    alt: "A guest posing at the blue and silver Greater Together photo wall",
+  },
+  "The Live Culinary Studio": {
+    src: liveCulinary,
+    alt: "A chef plating canapés live at the ballroom foyer",
+  },
 };
+
+const LOOKS = [look1, look2, look3, look4];
 
 function KickoffSection() {
   return (
     <div id="kickoff-night" className="scroll-mt-28">
-      <Band tone="light" pattern={false} className="pb-14 sm:pb-20">
+      <Band tone="light" className="py-14 sm:py-20">
         <SectionIntro
           eyebrow="Day 2 · Night"
           title="Greater Together"
@@ -353,7 +445,23 @@ function KickoffSection() {
                 {DRESS_CODE_KICKOFF.palette}: {DRESS_CODE_KICKOFF.words.join(" · ")}. Datang dengan
                 outfit terbaikmu yang mencerminkan semangat Greater Together.
               </p>
-              <div className="mt-auto pt-4">
+              <div className="mt-5 grid grid-cols-4 gap-2">
+                {LOOKS.map((src, i) => (
+                  <div
+                    key={src}
+                    className="aspect-[3/4] overflow-hidden rounded-xl bg-white/[0.06]"
+                  >
+                    <img
+                      src={src}
+                      alt={`Greater Together Look inspiration ${i + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover object-top"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-auto pt-5">
                 <Link to="/guide" hash="dress-code" className={TEXT_LINK}>
                   Lihat inspirasi dress code
                 </Link>
@@ -361,15 +469,25 @@ function KickoffSection() {
             </div>
           </Reveal>
           <Reveal delay={0.06}>
-            <ul className="grid h-full gap-3">
-              {KICKOFF_ONSITE.map((o) => (
-                <Fact
-                  key={o.title}
-                  icon={ONSITE_ICON[o.title] ?? Sparkles}
-                  title={o.title}
-                  text={o.text}
-                />
-              ))}
+            <ul className="grid h-full gap-3 sm:grid-cols-2">
+              {KICKOFF_ONSITE.map((o) => {
+                const photo = ONSITE_PHOTO[o.title];
+                return (
+                  <li key={o.title} className="surface flex flex-col overflow-hidden">
+                    {photo && (
+                      <div className="relative aspect-[4/3]">
+                        <div className="absolute inset-0">
+                          <MotionImage src={photo.src} alt={photo.alt} className="h-full" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex-1 p-5">
+                      <h3 className="text-[0.9375rem] font-semibold text-white">{o.title}</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-white/60">{o.text}</p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </Reveal>
         </div>

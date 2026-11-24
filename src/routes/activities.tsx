@@ -24,7 +24,6 @@ import { QrFullscreen } from "@/components/passport/QrFullscreen";
 import { FirstStroke } from "@/components/activities/FirstStroke";
 import { QuestionBox } from "@/components/activities/QuestionBox";
 import { CheckInPanel } from "@/components/activities/CheckIn";
-import { RedemptionStatus } from "@/components/activities/Redemption";
 import { OneWordPulse } from "@/components/activities/OneWordPulse";
 import { Badge } from "@/components/activities/Badges";
 import { SectionIntro } from "@/components/activities/SectionIntro";
@@ -810,10 +809,7 @@ function SocialSection() {
       <Band tone="dark" palm="right" className="py-14 sm:py-20">
         <div>
           <Reveal>
-            <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-              <h3 className="text-lg font-semibold text-white">Band & DJs</h3>
-              <Badge tone="soon">Proposed</Badge>
-            </div>
+            <h3 className="mb-4 text-lg font-semibold text-white">Band & DJs</h3>
           </Reveal>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
             {[...SUNSET_LINEUP, SPECIAL_WISHLIST].map((a, i) => (
@@ -854,9 +850,6 @@ function SocialSection() {
             title={SUNSET_GAMES.games[1]!.name}
             text={SUNSET_GAMES.games[1]!.text}
           />
-          <Reveal delay={0.06} className="mt-8 block">
-            <RedemptionStatus />
-          </Reveal>
         </div>
       </Band>
 

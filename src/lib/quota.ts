@@ -17,6 +17,7 @@ import directionRecap from "@/assets/activities/direction-recap.webp";
 import functionalHuddle from "@/assets/activities/functional-huddle.webp";
 import buildItTogether from "@/assets/activities/build-it-together.webp";
 import togetherOnTarget from "@/assets/activities/together-on-target.webp";
+import colourSyncBooth from "@/assets/colour-sync/booth.webp";
 
 /**
  * The on-site activities that stamp the pass, all three days (Dulux sitemap:
@@ -46,6 +47,7 @@ export const ACTIVITY_PHOTO = {
   "complete-your-piece": completeYourPiece,
   "build-it-together": buildItTogether,
   "together-on-target": togetherOnTarget,
+  "colour-sync": colourSyncBooth,
   "kickoff-night": ballroom,
   "breakfast-reconnect": breakfastReconnect,
   "direction-recap": directionRecap,
